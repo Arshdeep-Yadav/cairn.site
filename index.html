@@ -1,0 +1,1802 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cairn — shared graph memory for coding agents</title>
+  <meta name="description" content="Cairn is a local MCP server that gives every coding agent the same memory: decisions with reasoning, changes with provenance, open questions, risks, and handoffs — stored as Markdown, connected as a graph.">
+  <meta name="author" content="Arshdeep Yadav">
+  <meta name="theme-color" content="#f7f4ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Cairn">
+  <meta property="og:title" content="Cairn — shared graph memory for coding agents">
+  <meta property="og:description" content="Decisions, changes, questions, risks, and handoffs in one local Markdown vault. Read over MCP by Claude Code, Cursor, Codex, and every other agent you run.">
+  <meta property="og:image" content="assets/shots/home.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cairn — shared graph memory for coding agents">
+  <meta name="twitter:description" content="A local MCP server that remembers why the code looks the way it does. Plain Markdown, a derived graph, zero telemetry.">
+  <meta name="twitter:image" content="assets/shots/home.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Cairn",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "macOS, Linux, Windows",
+    "description": "Shared graph memory for coding agents. A local MCP server, capture hooks, and a Markdown knowledge workspace.",
+    "softwareVersion": "0.1.0",
+    "license": "https://opensource.org/licenses/MIT",
+    "codeRepository": "https://github.com/Arshdeep-Yadav/Cairn",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem('cairn-site-theme');
+        const theme = saved === 'light' || saved === 'dark'
+          ? saved
+          : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      } catch {}
+    })();
+  </script>
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 4v16M6 14l6 6 6-6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 8.6 8 11 4.6-2.4 8-6 8-11V5l-8-3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5Z"/><path d="M14 2v5h5"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></symbol>
+    <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="9" r="2.5"/><circle cx="10" cy="18" r="2.5"/><path d="m8.3 8 7.4.7M7.2 9.2l1.8 6.4M17 11.2l-5.3 5"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z"/><path d="M8 10h8M8 14h5"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" data-header>
+    <div class="header-inner wrap">
+      <a class="brand" href="#top" aria-label="Cairn — back to top">
+        <img src="assets/brand/favicon.svg" alt="" width="32" height="32">
+        <span class="brand-name">Cairn</span>
+        <span class="brand-version">0.1.0</span>
+      </a>
+
+      <nav class="site-nav" id="site-nav" data-menu aria-label="Sections">
+        <a href="#why" data-nav-link>Why</a>
+        <a href="#architecture" data-nav-link>Architecture</a>
+        <a href="#mcp" data-nav-link>MCP</a>
+        <a href="#install" data-nav-link>Install</a>
+        <a href="#workspace" data-nav-link>Workspace</a>
+        <a href="#security" data-nav-link>Security</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch to dark theme">
+          <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+        </button>
+        <a class="text-btn gh-link" href="https://github.com/Arshdeep-Yadav/Cairn" rel="noopener" aria-label="Cairn on GitHub">
+          <svg class="icon" aria-hidden="true"><use href="#i-github"/></svg>
+          <span>GitHub</span>
+        </a>
+        <a class="btn btn-primary header-cta" href="#install">Get started</a>
+        <button class="menu-toggle icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+          <svg class="icon icon-menu" aria-hidden="true"><use href="#i-menu"/></svg>
+          <svg class="icon icon-close" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Shared graph memory · local-first · MIT</p>
+          <h1 id="hero-title">Agents change code.<br><em>Cairn remembers why.</em></h1>
+          <p class="hero-lede">A local MCP server that gives every coding agent the same memory — decisions with their reasoning, changes with provenance, open questions, risks, and handoffs. Written as Markdown you own, connected as a graph they can query.</p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#install">Install Cairn
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+            <a class="btn btn-secondary" href="#architecture">See the architecture</a>
+          </div>
+
+          <div class="cmd cmd-hero" data-copy-scope>
+            <span class="cmd-prompt" aria-hidden="true">$</span>
+            <code id="cmd-hero">npx cairn</code>
+            <button class="copy-btn" type="button" data-copy="#cmd-hero" aria-label="Copy the npx cairn command">
+              <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+              <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+              <span data-copy-label>Copy</span>
+            </button>
+          </div>
+
+          <ul class="hero-facts">
+            <li>Node 20+</li>
+            <li>14 MCP tools</li>
+            <li>Zero native binaries</li>
+            <li>No telemetry</li>
+          </ul>
+        </div>
+
+        <div class="hero-visual">
+          <figure class="frame">
+            <div class="frame-bar">
+              <span class="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="frame-address">127.0.0.1:4242</span>
+              <span class="frame-tag">workspace</span>
+            </div>
+            <img class="shot-light" src="assets/shots/home.png" alt="The Cairn workspace showing the vault brief, note and link counts, open threads, recent decisions, a memory map, and agents in the vault." width="1440" height="1000" fetchpriority="high">
+            <img class="shot-dark" src="assets/shots/home-dark.png" alt="The Cairn workspace in dark theme, showing the same brief and memory overview." width="1440" height="1000" loading="lazy">
+          </figure>
+
+          <aside class="note-peek" aria-label="Example decision note stored by Cairn">
+            <div class="note-peek-top">
+              <span class="kind-dot kind-decision" aria-hidden="true"></span>
+              <span class="note-peek-kind">decision</span>
+              <span class="status-pill status-accepted">accepted</span>
+            </div>
+            <p class="note-peek-title">Move rate limiting to the edge</p>
+            <p class="note-peek-body">One global limiter adds a network hop to every request. Rejected: central Redis token bucket.</p>
+            <p class="note-peek-path">notes/decisions/2026-11-17-…md</p>
+          </aside>
+        </div>
+      </div>
+
+      <div class="wrap clients-strip">
+        <span class="clients-label">Wire the agents you already run</span>
+        <ul class="clients-list">
+          <li>Claude Code</li>
+          <li>Cursor</li>
+          <li>Antigravity</li>
+          <li>VS Code</li>
+          <li>Codex</li>
+          <li>Gemini CLI</li>
+          <li>Windsurf</li>
+          <li>Zed</li>
+          <li>OpenCode</li>
+        </ul>
+      </div>
+    </section>
+    <section class="section" id="why" aria-labelledby="why-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">The reset problem</p>
+          <h2 id="why-title">Every session starts from zero. <span class="h-muted">Your project doesn't have to.</span></h2>
+          <p class="lede">Claude Code, Cursor, Codex, Copilot — each one boots clean. So tradeoffs get relitigated, decisions get quietly reversed, and the reason a file looks the way it does disappears with the chat window.</p>
+        </header>
+
+        <div class="compare reveal">
+          <article class="compare-col compare-before">
+            <header class="compare-head">
+              <span class="compare-badge">Without shared memory</span>
+              <h3>The project forgets</h3>
+            </header>
+            <ol class="ledger">
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>A decision is made in chat.</strong><p>The reasoning, the rejected alternatives, the constraint that forced it.</p></div>
+              </li>
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>The chat closes.</strong><p>Only the code survives. The rationale does not.</p></div>
+              </li>
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>The next agent proposes the opposite.</strong><p>It has no way to know the question was already settled.</p></div>
+              </li>
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>Nobody remembers which one won.</strong><p>Or why. Or what would have to change for the old call to be right again.</p></div>
+              </li>
+            </ol>
+          </article>
+
+          <article class="compare-col compare-after">
+            <header class="compare-head">
+              <span class="compare-badge">With Cairn</span>
+              <h3>The project remembers</h3>
+            </header>
+            <ol class="ledger">
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>The decision is written once.</strong><p>Context, choice, why, alternatives, consequences — with an immutable id.</p></div>
+              </li>
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>Every agent reads it before acting.</strong><p>Accepted decisions are constraints, not suggestions.</p></div>
+              </li>
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>Changes link to the decision they implement.</strong><p>Files, commits, sessions, and agents all become edges in the graph.</p></div>
+              </li>
+              <li>
+                <span class="ledger-mark" aria-hidden="true"></span>
+                <div><strong>Superseded calls stay in the graph.</strong><p>Marked superseded, linked to the replacement, never silently erased.</p></div>
+              </li>
+            </ol>
+          </article>
+        </div>
+
+        <div class="pull reveal">
+          <p class="pull-line">Memory isn't a longer prompt.<br>It's a place.</p>
+          <div class="pull-body">
+            <p>A prompt is carried by one session. A vault outlives every session, every agent, and every model upgrade.</p>
+            <p>Cairn keeps one vault per project — or one across all of them — and gives each agent a small, standard interface to it. The memory is a folder of Markdown. The intelligence is in the links.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint" id="loop" aria-labelledby="loop-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">The working loop</p>
+          <h2 id="loop-title">Read. Work. Record. Hand off.</h2>
+          <p class="lede">Cairn isn't a write-only log. It is a loop the agent runs every session: load what is already known, act on it, record what changed, and leave the next agent a clean starting point.</p>
+        </header>
+
+        <ol class="loop reveal">
+          <li class="loop-step">
+            <span class="loop-num">01</span>
+            <div class="loop-body">
+              <h3>Recall</h3>
+              <p>Load the project brief. Search before choosing an approach. Open the notes behind a decision before editing the file it governs.</p>
+              <ul class="tool-chips" aria-label="Recall tools">
+                <li><code>memory_context</code></li>
+                <li><code>memory_search</code></li>
+                <li><code>memory_get</code></li>
+              </ul>
+            </div>
+          </li>
+          <li class="loop-step">
+            <span class="loop-num">02</span>
+            <div class="loop-body">
+              <h3>Work</h3>
+              <p>Edit code as usual. Claude Code hooks append edits to a rolling worklog; git commits are captured with files, stats, and provenance. Diffs are not stored by default.</p>
+              <ul class="tool-chips" aria-label="Capture tools">
+                <li><code>capture_changes</code></li>
+                <li><code>cairn capture-commit</code></li>
+              </ul>
+            </div>
+          </li>
+          <li class="loop-step">
+            <span class="loop-num">03</span>
+            <div class="loop-body">
+              <h3>Record</h3>
+              <p>One idea per note. The title is a claim. The body carries the why, the alternatives rejected, and the consequences. Link it to what it implements or blocks.</p>
+              <ul class="tool-chips" aria-label="Record tools">
+                <li><code>memory_write</code></li>
+                <li><code>memory_update</code></li>
+                <li><code>memory_link</code></li>
+              </ul>
+            </div>
+          </li>
+          <li class="loop-step">
+            <span class="loop-num">04</span>
+            <div class="loop-body">
+              <h3>Hand off</h3>
+              <p>Close with a summary and concrete next steps. Send a direct message or a structured handoff when another agent must continue without asking what happened.</p>
+              <ul class="tool-chips" aria-label="Handoff tools">
+                <li><code>memory_handoff</code></li>
+                <li><code>memory_send</code></li>
+                <li><code>memory_end_session</code></li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+
+        <p class="loop-note reveal"><span class="loop-note-label">Why it holds</span> The loop is installed as an always-on rule in the client, so the agent knows to read before acting and write while the context is still true. Skill-aware clients also get the long-form playbook.</p>
+      </div>
+    </section>
+    <section class="plate section" id="architecture" aria-labelledby="arch-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow plate-eyebrow">Architecture</p>
+          <h2 id="arch-title">A folder of Markdown.<br>A graph in memory. <span class="plate-muted">Three ways in.</span></h2>
+          <p class="lede">No database. No daemon required for the memory to exist. The vault is the truth; everything else is derived and disposable.</p>
+        </header>
+
+        <figure class="arch reveal" aria-labelledby="arch-caption">
+          <div class="arch-toolbar">
+            <span class="arch-figure-label">Figure 01 · runtime topology</span>
+            <span class="arch-legend">
+              <span><i class="legend-line"></i> request path</span>
+              <span><i class="legend-line is-dashed"></i> derived / read-only</span>
+            </span>
+          </div>
+
+          <div class="arch-stack">
+            <div class="arch-layer">
+              <div class="arch-index"><span class="arch-num">01</span><span class="arch-tag">Agents</span></div>
+              <div class="arch-content">
+                <div class="arch-layer-head">
+                  <h3>Every client you already run</h3>
+                  <span class="arch-badge">one server instance per agent</span>
+                </div>
+                <p>Each coding client launches its own Cairn MCP process over stdio. Its <code>--agent</code> handle stamps every write; its active session links them together. Hooks call back into the same store.</p>
+                <ul class="arch-chips" aria-label="Supported clients">
+                  <li>Claude Code</li><li>Cursor</li><li>Antigravity</li><li>VS Code</li><li>Codex</li><li>Gemini CLI</li><li>Windsurf</li><li>Zed</li><li>OpenCode</li><li>+ generic</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="arch-link" aria-hidden="true"><span>MCP stdio · JSON-RPC &nbsp;|&nbsp; hooks &amp; CLI callbacks</span></div>
+
+            <div class="arch-layer">
+              <div class="arch-index"><span class="arch-num">02</span><span class="arch-tag">Surfaces</span></div>
+              <div class="arch-content">
+                <div class="arch-layer-head">
+                  <h3>Three interfaces, one contract</h3>
+                  <span class="arch-badge">local processes</span>
+                </div>
+                <div class="arch-cells">
+                  <div class="arch-cell">
+                    <span class="arch-cell-kicker">MCP</span>
+                    <h4>14 tools · 2 resources</h4>
+                    <p>Official SDK, tuned for model consumption: counts first, ids plus titles, single-line errors.</p>
+                    <code class="path">src/mcp/server.ts</code>
+                  </div>
+                  <div class="arch-cell">
+                    <span class="arch-cell-kicker">CLI</span>
+                    <h4>init · connect · capture · inspect</h4>
+                    <p>Vault setup, client wiring, hook entrypoints, search, timeline, export, health checks.</p>
+                    <code class="path">src/cli/index.ts</code>
+                  </div>
+                  <div class="arch-cell">
+                    <span class="arch-cell-kicker">Workspace</span>
+                    <h4>HTTP API + SSE</h4>
+                    <p>Password-gated UI on <code>127.0.0.1:4242</code>. JSON routes and a live event stream share the same store.</p>
+                    <code class="path">src/cli/server.ts · web/</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="arch-link" aria-hidden="true"><span>every surface calls the same Store API</span></div>
+
+            <div class="arch-layer">
+              <div class="arch-index"><span class="arch-num">03</span><span class="arch-tag">Store</span></div>
+              <div class="arch-content">
+                <div class="arch-layer-head">
+                  <h3>One operation surface</h3>
+                  <span class="arch-badge">src/core/store.ts</span>
+                </div>
+                <p>Write, update, ranked search with snippets, graph queries, timeline, sessions, capture, messages, inbox, and handoffs. Project resolution is identical on every path: <strong>explicit argument → vault config → detected folder or package name</strong>.</p>
+                <ul class="arch-chips arch-chips-mono">
+                  <li>write</li><li>update</li><li>search</li><li>graph</li><li>timeline</li><li>sessions</li><li>capture</li><li>messages</li><li>inbox</li><li>handoffs</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="arch-link" aria-hidden="true"><span>redaction → atomic write → cross-process lock</span></div>
+
+            <div class="arch-layer arch-layer-vault">
+              <div class="arch-index"><span class="arch-num">04</span><span class="arch-tag">Vault</span></div>
+              <div class="arch-content">
+                <div class="arch-layer-head">
+                  <h3>Markdown is the source of truth</h3>
+                  <span class="arch-badge arch-badge-truth">durable state</span>
+                </div>
+                <div class="arch-cells arch-vault-cells">
+                  <div class="arch-cell">
+                    <span class="arch-cell-kicker">Root</span>
+                    <pre class="arch-tree">.cairn/
+├── cairn.config.json
+├── README.md
+└── notes/</pre>
+                  </div>
+                  <div class="arch-cell">
+                    <span class="arch-cell-kicker">Notes</span>
+                    <pre class="arch-tree">notes/&lt;kind&gt;/
+└── YYYY-MM-DD-&lt;kind&gt;-&lt;slug&gt;-&lt;id&gt;.md
+    YAML frontmatter + free Markdown</pre>
+                  </div>
+                  <div class="arch-cell">
+                    <span class="arch-cell-kicker">State</span>
+                    <pre class="arch-tree">state/
+├── auth.json      0600
+├── .write.lock
+├── sessions/
+├── inbox/
+└── backups/</pre>
+                  </div>
+                </div>
+                <p class="arch-fineprint">Hand-editable except <code>id</code>. Atomic temp-file + rename. Redaction runs before anything lands. Deletion is lazy: a linked note becomes a <code>missing</code> placeholder, never a dangling reference.</p>
+              </div>
+            </div>
+
+            <div class="arch-link is-derived" aria-hidden="true"><span>scan at startup · rebuild from disk · never persisted</span></div>
+
+            <div class="arch-layer">
+              <div class="arch-index"><span class="arch-num">05</span><span class="arch-tag">Index</span></div>
+              <div class="arch-content">
+                <div class="arch-layer-head">
+                  <h3>The graph is derived</h3>
+                  <span class="arch-badge">in memory only</span>
+                </div>
+                <p><code>src/core/indexer.ts</code> scans the vault on every server start and builds nodes, typed edges, and backlinks in one pass. Virtual nodes stand in for projects, agents, sessions, and files. Delete the index and you lose nothing.</p>
+                <ul class="arch-chips arch-chips-mono">
+                  <li>note nodes</li><li>file nodes</li><li>agent nodes</li><li>session nodes</li><li>backlinks</li><li>16 edge types</li><li>auto-link by file</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <figcaption id="arch-caption">Read top to bottom: agents reach one of three surfaces; every surface calls the same store; the store reads and atomically writes the Markdown vault; the in-memory index is rebuilt from that vault at startup. Dashed connectors carry derived state. The vault is the only thing you must keep.</figcaption>
+        </figure>
+
+        <div class="arch-notes reveal">
+          <article>
+            <span class="arch-note-num">01</span>
+            <h3>Nothing is locked in</h3>
+            <p>Notes are Markdown with YAML frontmatter. Open the folder in Obsidian, grep it, diff it in git, edit it by hand. The app is a view, not a gatekeeper.</p>
+          </article>
+          <article>
+            <span class="arch-note-num">02</span>
+            <h3>The index is disposable</h3>
+            <p>No index files, no database migrations, no persisted caches. Restart the process and the graph is rebuilt from the notes that exist.</p>
+          </article>
+          <article>
+            <span class="arch-note-num">03</span>
+            <h3>Three surfaces stay honest</h3>
+            <p>The MCP server, the CLI, and the workspace all pass through one store, so a note written by an agent and a note written by the UI land identically.</p>
+          </article>
+        </div>
+
+        <p class="arch-quote reveal">Delete the index and you lose nothing.<br><span>Delete the vault and you lose the memory.</span></p>
+      </div>
+    </section>
+    <section class="section" id="memory" aria-labelledby="memory-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">The memory model</p>
+          <h2 id="memory-title">Twelve kinds of note. <span class="h-muted">Sixteen kinds of edge.</span></h2>
+          <p class="lede">A note is a Markdown file with YAML frontmatter. Its kind selects the folder and the lifecycle. Its fields connect it to files, sessions, agents, and other notes — and those connections are the product.</p>
+        </header>
+
+        <div class="kinds reveal">
+          <article class="kind kind-decision">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Decision</h3></div>
+            <p class="kind-status">proposed → accepted → rejected → superseded</p>
+            <p>A choice plus the why, the alternatives considered, and the consequences. One decision per note.</p>
+          </article>
+          <article class="kind kind-change">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Change</h3></div>
+            <p class="kind-status">active → committed → captured</p>
+            <p>What landed, where, and by whom. Files, stats, commit provenance, and links to the decisions it implements.</p>
+          </article>
+          <article class="kind kind-insight">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Insight</h3></div>
+            <p class="kind-status">active → archived</p>
+            <p>How something actually behaves — the thing you learned by reading the code or running the test.</p>
+          </article>
+          <article class="kind kind-question">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Question</h3></div>
+            <p class="kind-status">open → answered</p>
+            <p>An unknown that blocks or shapes the work. Answers link back with an <code>answers</code> edge.</p>
+          </article>
+          <article class="kind kind-answer">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Answer</h3></div>
+            <p class="kind-status">answered</p>
+            <p>The resolution to a question, kept as its own note so the question's history stays intact.</p>
+          </article>
+          <article class="kind kind-spec">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Spec</h3></div>
+            <p class="kind-status">draft → active → archived</p>
+            <p>Behaviour another caller can rely on. The contract a later change must not quietly break.</p>
+          </article>
+          <article class="kind kind-risk">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Risk</h3></div>
+            <p class="kind-status">open → mitigated → accepted</p>
+            <p>A hazard with a blast radius, not a vague worry. Include what breaks and who feels it.</p>
+          </article>
+          <article class="kind kind-task">
+            <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Task</h3></div>
+            <p class="kind-status">todo → doing → done → blocked</p>
+            <p>A promised follow-up that isn't done yet, visible to the next agent instead of buried in a summary.</p>
+          </article>
+        </div>
+
+        <div class="kinds-extra reveal">
+          <div><span class="kind-dot kind-message" aria-hidden="true"></span><strong>Message</strong><p>Direct or broadcast coordination. Unread state per agent.</p></div>
+          <div><span class="kind-dot kind-handoff" aria-hidden="true"></span><strong>Handoff</strong><p>Structured work transfer: summary, next steps, open questions, files.</p></div>
+          <div><span class="kind-dot kind-session" aria-hidden="true"></span><strong>Session</strong><p>Who worked, on what goal, with which model and client.</p></div>
+          <div><span class="kind-dot kind-note" aria-hidden="true"></span><strong>Note</strong><p>The general-purpose kind when nothing more specific fits.</p></div>
+        </div>
+
+        <div class="edges reveal">
+          <div class="edge-group">
+            <h3>Edges agents write</h3>
+            <p>Set in <code>relations</code>, or created with <code>memory_link</code>.</p>
+            <ul class="edge-list">
+              <li><code>relates_to</code><span>The default connection</span></li>
+              <li><code>implements</code><span>A change makes a decision real</span></li>
+              <li><code>supports</code><span>Evidence for a claim</span></li>
+              <li><code>contradicts</code><span>New evidence against an old call</span></li>
+              <li><code>depends_on</code><span>This breaks if that changes</span></li>
+              <li><code>blocks</code><span>A risk or question holds up a task</span></li>
+              <li><code>answers</code><span>An answer resolves a question</span></li>
+              <li><code>supersedes</code><span>A newer call replaces an older one</span></li>
+            </ul>
+          </div>
+          <div class="edge-group">
+            <h3>Edges Cairn derives</h3>
+            <p>Computed from fields, wikilinks, and provenance — no extra work for the agent.</p>
+            <ul class="edge-list">
+              <li><code>touches</code><span>A wikilink to a file path</span></li>
+              <li><code>mentions</code><span>A wikilink to another note</span></li>
+              <li><code>part_of</code><span>Note → project node</span></li>
+              <li><code>authored_by</code><span>Note → agent node</span></li>
+              <li><code>in_session</code><span>Note → session node</span></li>
+              <li><code>addressed_to</code><span>Message → agent nodes</span></li>
+              <li><code>handoff_to</code><span>Handoff → recipient</span></li>
+              <li><code>replies_to</code><span>Message threading</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="specimen reveal">
+          <div class="specimen-code">
+            <div class="code-head">
+              <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="code-name">notes/decisions/2026-11-17-decision-edge-limiter-01J9ZK.md</span>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#specimen-source" aria-label="Copy the example note source">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <pre class="code-block"><code id="specimen-source"><span class="c">---</span>
+<span class="k">id</span>: <span class="s">01J9ZK3W7Q4M8N2P6R8T0V2X4A</span>        <span class="c"># immutable</span>
+<span class="k">kind</span>: <span class="v">decision</span>
+<span class="k">title</span>: <span class="s">Move rate limiting to the edge</span>
+<span class="k">status</span>: <span class="v">accepted</span>
+<span class="k">project</span>: <span class="v">orbit-api</span>
+<span class="k">agent</span>: <span class="v">cursor</span>
+<span class="k">session</span>: <span class="s">01J9ZK3W7Q4M8N2P6R8T0V2X4B</span>
+<span class="k">created</span>: <span class="v">2026-11-17T09:14:00.000Z</span>
+<span class="k">tags</span>: <span class="v">[performance, edge]</span>
+<span class="k">files</span>: <span class="v">[src/edge/limiter.ts]</span>          <span class="c"># → touches</span>
+<span class="k">related</span>: <span class="v">[01J9ZJ2M6P4Q8R0T2V4X6Z8B0D]</span> <span class="c"># → relates_to</span>
+<span class="k">relations</span>:
+  - <span class="k">to</span>: <span class="s">01J9ZJ2M6P4Q8R0T2V4X6Z8B0D</span>
+    <span class="k">type</span>: <span class="v">implements</span>
+<span class="k">supersedes</span>: <span class="v">[01J9ZH0K4N2P6R8T0V2X4Z6B8D]</span>
+<span class="k">dedupe_key</span>: <span class="v">edge-rate-limit-v1</span>       <span class="c"># repeat writes upsert</span>
+<span class="k">aliases</span>: <span class="v">[01J9ZK3W7Q4M8N2P6R8T0V2X4A]</span>
+<span class="k">metadata</span>:
+  <span class="k">commit</span>: <span class="v">4f2a91c</span>
+  <span class="k">branch</span>: <span class="v">feat/edge-limiter</span>
+<span class="c">---</span>
+
+<span class="h">## Context</span>
+Every request currently crosses the region to reach one
+central limiter. At peak, that hop is pure added latency.
+
+<span class="h">## Decision</span>
+Keep the token bucket in the edge worker. Rejected the
+central Redis bucket: one more network dependency on the
+hot path, and a shared failure domain.
+
+<span class="h">## Consequences</span>
+Per-edge counters can drift. Reconcile on a schedule and
+link the follow-up spec.</code></pre>
+          </div>
+
+          <div class="specimen-notes">
+            <div class="specimen-note">
+              <span class="specimen-num">01</span>
+              <div><h3>Identity and lifecycle</h3><p><code>id</code> is immutable and ULID-ish. <code>kind</code> selects the folder and the status machine. The <code>title</code> is the graph label — make it a claim, not a category.</p></div>
+            </div>
+            <div class="specimen-note">
+              <span class="specimen-num">02</span>
+              <div><h3>The graph fields</h3><p><code>related</code>, <code>relations</code>, <code>supersedes</code>, and <code>files</code> create typed edges. Wikilinks in the body create <code>touches</code> and <code>mentions</code>. <code>aliases</code> keep Obsidian wikilinks resolving.</p></div>
+            </div>
+            <div class="specimen-note">
+              <span class="specimen-num">03</span>
+              <div><h3>Provenance</h3><p><code>project</code>, <code>agent</code>, <code>session</code>, and <code>created</code> record who wrote this and when. <code>metadata</code> carries structured payload such as a commit sha or branch.</p></div>
+            </div>
+            <div class="specimen-note">
+              <span class="specimen-num">04</span>
+              <div><h3>Safe writes</h3><p><code>dedupe_key</code> turns a repeated write into an upsert. Redaction runs first, then an atomic write. Deletion is lazy, so the graph never dangles.</p></div>
+            </div>
+            <p class="specimen-callout">Everything is hand-editable except <code>id</code>. If you can edit a Markdown file, you can extend the memory.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section section-tint" id="mcp" aria-labelledby="mcp-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">The MCP surface</p>
+          <h2 id="mcp-title">Fourteen tools. Two resources.<br><span class="h-muted">Zero ceremony.</span></h2>
+          <p class="lede">Cairn runs as a local MCP stdio server using the official SDK. One instance per agent: <code>--agent</code> stamps every write, <code>--project</code> scopes it, and the session id links everything written in between.</p>
+        </header>
+
+        <div class="contract reveal" role="list" aria-label="The agent session contract">
+          <div role="listitem">
+            <span class="contract-step">Before work</span>
+            <h3>Read</h3>
+            <p>Call <code>memory_context</code>. Search the topic, file, or error before choosing an approach.</p>
+          </div>
+          <div role="listitem">
+            <span class="contract-step">While working</span>
+            <h3>Write</h3>
+            <p>Record one idea per note as it becomes true. Link it. Capture the change set after edits.</p>
+          </div>
+          <div role="listitem">
+            <span class="contract-step">Before stopping</span>
+            <h3>Hand off</h3>
+            <p>Close the session with a summary, next steps, and anything the next agent must not rediscover.</p>
+          </div>
+        </div>
+
+        <div class="tool-group reveal">
+          <div class="tool-group-head">
+            <div><h3>Read</h3><span class="group-count">6 tools</span></div>
+            <p>Cheap, read-only calls. Safe to make often; designed to be the first thing an agent does.</p>
+          </div>
+          <div class="table-scroll" role="region" aria-label="Cairn read tools" tabindex="0">
+            <table class="tool-table">
+              <caption class="sr-only">Cairn read tools</caption>
+              <thead><tr><th scope="col">Tool</th><th scope="col">What it returns</th><th scope="col">Call it when</th></tr></thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_context</code></th>
+                  <td>The living brief: decisions in force, proposals, open questions, risks, recent changes, handoffs, unread messages, active agents, and high-context files. An optional <code>focus</code> appends a targeted search.</td>
+                  <td>First call in a task, or when switching projects.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_search</code></th>
+                  <td>Ranked results with snippets and ids across titles, bodies, tags, files, projects, and agents. Filter by kind, status, tags, or recency; search one project or all of them.</td>
+                  <td>Before choosing an approach, and before writing, to avoid a near-duplicate.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_get</code></th>
+                  <td>One note with its full body, typed relations, links out, backlinks, files, session, and related notes.</td>
+                  <td>After search or context surfaces an id worth reading in full.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_graph</code></th>
+                  <td>JSON <code>{nodes, edges, stats}</code> around seed notes or a query, depth 1–4. Optional file and agent nodes. Virtual project, agent, session, and file nodes have ids.</td>
+                  <td>Impact analysis: what implements, depends on, blocks, touches, or supersedes something.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_timeline</code></th>
+                  <td>Recent activity, newest first and grouped by day. Filter by project, agent, kind, and lookback window.</td>
+                  <td>Catching up after time away, or building a handoff.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_inbox</code></th>
+                  <td>Unread messages and handoffs addressed to you, plus broadcasts. Optionally include closed handoffs.</td>
+                  <td>When the brief shows unread items. Set <code>mark_read</code> once handled.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tool-group reveal">
+          <div class="tool-group-head">
+            <div><h3>Write</h3><span class="group-count">4 tools</span></div>
+            <p>Durable changes. Every write is redacted, linked, and serialized against other processes.</p>
+          </div>
+          <div class="table-scroll" role="region" aria-label="Cairn write tools" tabindex="0">
+            <table class="tool-table">
+              <caption class="sr-only">Cairn write tools</caption>
+              <thead><tr><th scope="col">Tool</th><th scope="col">What it returns</th><th scope="col">Call it when</th></tr></thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_write</code></th>
+                  <td>A new note with kind, title, body, status, tags, files, related ids, typed relations, recipients, session, dedupe key, and metadata. Files auto-link to related notes.</td>
+                  <td>A decision, insight, risk, question, spec, task, or change becomes true.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_update</code></th>
+                  <td>Append or replace a body; change status, tags, files, relations, or metadata. Append is the default, so outcomes accumulate safely.</td>
+                  <td>An outcome arrives, a question is answered, or a decision is superseded.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_link</code></th>
+                  <td>A typed edge between two notes: <code>relates_to</code>, <code>implements</code>, <code>supports</code>, <code>contradicts</code>, <code>depends_on</code>, <code>blocks</code>, <code>answers</code>, <code>supersedes</code>.</td>
+                  <td>A change implements a decision, a risk blocks a task, or an answer resolves a question.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">capture_changes</code></th>
+                  <td>The git change set as change memory: files, stats, commit provenance, and automatic links to related decisions. Identical captures deduplicate. Diffs are omitted by default.</td>
+                  <td>After edits or a commit. Use a manual change note when there is no git repo.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tool-group reveal">
+          <div class="tool-group-head">
+            <div><h3>Coordinate</h3><span class="group-count">4 tools</span></div>
+            <p>Sessions and agent-to-agent traffic. This is what makes memory collaborative instead of a personal notebook.</p>
+          </div>
+          <div class="table-scroll" role="region" aria-label="Cairn coordination tools" tabindex="0">
+            <table class="tool-table">
+              <caption class="sr-only">Cairn coordination tools</caption>
+              <thead><tr><th scope="col">Tool</th><th scope="col">What it returns</th><th scope="col">Call it when</th></tr></thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_start_session</code></th>
+                  <td>Registers the session, marks the agent online, and returns the project brief. Reuses a recent active session when one exists. Later writes on the connection link to it automatically.</td>
+                  <td>At the start of substantial work, with a concrete goal.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_end_session</code></th>
+                  <td>Closes the session with a summary and next steps, and lists every note captured during it. Marks the agent offline.</td>
+                  <td>Before finishing, so the next agent resumes from a clean summary.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_send</code></th>
+                  <td>A direct or broadcast message with priority and reply threading. It appears in the recipient's inbox and brief.</td>
+                  <td>Coordination, review requests, questions, or status. Use <code>to: "*"</code> only when everyone needs it.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code class="tool-name">memory_handoff</code></th>
+                  <td>A structured handoff: summary, numbered next steps, open questions, files, priority, and a link to the current session.</td>
+                  <td>Another agent must continue without asking you what happened.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="resources reveal">
+          <div class="resources-copy">
+            <h3>Two resources, for clients that prefer them</h3>
+            <p>Resources are read-only Markdown. Any MCP client can fetch them without calling a tool.</p>
+          </div>
+          <div class="resource-card">
+            <code>cairn://overview</code>
+            <p>Vault statistics plus the current project brief. A fixed URI per server.</p>
+          </div>
+          <div class="resource-card">
+            <code>cairn://projects/{project}/brief</code>
+            <p>The living brief for any project in the vault. The template completes known project names.</p>
+          </div>
+        </div>
+
+        <div class="trace reveal" role="group" aria-label="Illustrative MCP session trace">
+          <div class="trace-head">
+            <div class="trace-title">
+              <span class="trace-lights" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span>Claude Code · orbit-api</span>
+            </div>
+            <span class="trace-badge">illustrative trace</span>
+          </div>
+          <div class="trace-body">
+            <div class="trace-row">
+              <p class="trace-call"><span class="trace-prompt" aria-hidden="true">▸</span><span class="trace-tool">memory_context</span><span class="trace-args">{ project: "orbit-api" }</span></p>
+              <p class="trace-result"><span class="trace-ok" aria-hidden="true">✓</span> brief · decisions in force · open risks · recent changes · 1 unread handoff</p>
+            </div>
+            <div class="trace-row">
+              <p class="trace-call"><span class="trace-prompt" aria-hidden="true">▸</span><span class="trace-tool">memory_search</span><span class="trace-args">{ query: "rate limiting edge", kinds: ["decision", "risk"] }</span></p>
+              <p class="trace-result"><span class="trace-ok" aria-hidden="true">✓</span> 3 notes · best match: “Move rate limiting to the edge” <span class="trace-id">01J9ZK…</span></p>
+            </div>
+            <div class="trace-row">
+              <p class="trace-call"><span class="trace-prompt" aria-hidden="true">▸</span><span class="trace-tool">memory_get</span><span class="trace-args">{ id: "01J9ZK…" }</span></p>
+              <p class="trace-result"><span class="trace-ok" aria-hidden="true">✓</span> decision · accepted · 2 backlinks · touches src/edge/limiter.ts</p>
+            </div>
+            <div class="trace-row">
+              <p class="trace-call"><span class="trace-prompt" aria-hidden="true">▸</span><span class="trace-tool">memory_write</span><span class="trace-args">{ kind: "decision", title: "Reconcile edge counters hourly", files: ["src/edge/reconcile.ts"] }</span></p>
+              <p class="trace-result"><span class="trace-ok" aria-hidden="true">✓</span> recorded · auto-linked 2 related notes · session attached</p>
+            </div>
+            <div class="trace-row">
+              <p class="trace-call"><span class="trace-prompt" aria-hidden="true">▸</span><span class="trace-tool">capture_changes</span><span class="trace-args">{ scope: "workspace" }</span></p>
+              <p class="trace-result"><span class="trace-ok" aria-hidden="true">✓</span> change captured · 4 files · linked to 1 decision</p>
+            </div>
+            <div class="trace-row">
+              <p class="trace-call"><span class="trace-prompt" aria-hidden="true">▸</span><span class="trace-tool">memory_handoff</span><span class="trace-args">{ to: "cursor", summary: "Limiter moved; reconciliation is stubbed.", next_steps: ["Implement hourly reconcile", "Add drift alert"] }</span></p>
+              <p class="trace-result"><span class="trace-ok" aria-hidden="true">✓</span> handoff created · cursor sees it in <span class="trace-id">memory_inbox</span></p>
+            </div>
+          </div>
+          <p class="trace-foot">Tool names, arguments, and response shapes are real. Ids and note content are examples; exact wording varies by client and model.</p>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="install" aria-labelledby="install-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">Install</p>
+          <h2 id="install-title">Two commands to a shared memory.</h2>
+          <p class="lede">Node 20 or newer. Run from the project root; Cairn creates <code>.cairn/</code> if it doesn't exist. Every install step is idempotent, and every file it touches is backed up first.</p>
+        </header>
+
+        <div class="prereq reveal">
+          <span class="prereq-label">Before you start</span>
+          <code>node --version</code><span class="prereq-arrow" aria-hidden="true">→</span><span>v20 or newer</span>
+          <span class="prereq-div" aria-hidden="true"></span>
+          <span>npm available via <code>npx</code></span>
+          <span class="prereq-div" aria-hidden="true"></span>
+          <span>Git optional — only <code>capture_changes</code> commit scope needs it</span>
+        </div>
+
+        <ol class="install-steps reveal">
+          <li>
+            <span class="step-num">01</span>
+            <h3>Launch</h3>
+            <p>First run creates the vault, starts the workspace, and prints a one-time password. Replace it at the first login — the generated password cannot open a lasting session.</p>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-launch">npx cairn</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-launch" aria-label="Copy launch command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">02</span>
+            <h3>Wire a client</h3>
+            <p>Writes the MCP entry, the always-on rule, and — where supported — the skill and hooks. Add several clients in one command.</p>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-wire">npx cairn connect claude-code --git-hooks</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-wire" aria-label="Copy client wiring command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">03</span>
+            <h3>Verify</h3>
+            <p><code>status</code> prints the vault, note count, live workspace, wired clients, and the exact MCP command. <code>doctor</code> is a read-only health check.</p>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-verify">npx cairn status</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-verify" aria-label="Copy status command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+          </li>
+        </ol>
+
+        <div class="install-tabs-head reveal">
+          <div>
+            <h3>Per-client wiring</h3>
+            <p>Four clients are configured automatically. The rest print a snippet to paste — Cairn never edits a config it doesn't own.</p>
+          </div>
+          <ul class="tab-legend" aria-label="Tab legend">
+            <li><span class="legend-dot is-auto" aria-hidden="true"></span> auto-configures</li>
+            <li><span class="legend-dot" aria-hidden="true"></span> prints a snippet</li>
+          </ul>
+        </div>
+
+        <div class="tabs reveal" data-tabs>
+          <div class="tablist" role="tablist" aria-label="Choose your client">
+            <button type="button" role="tab" id="tab-claude-code" aria-controls="panel-claude-code" aria-selected="true" tabindex="0"><span class="tab-dot is-auto" aria-hidden="true"></span>Claude Code</button>
+            <button type="button" role="tab" id="tab-cursor" aria-controls="panel-cursor" aria-selected="false" tabindex="-1"><span class="tab-dot is-auto" aria-hidden="true"></span>Cursor</button>
+            <button type="button" role="tab" id="tab-antigravity" aria-controls="panel-antigravity" aria-selected="false" tabindex="-1"><span class="tab-dot is-auto" aria-hidden="true"></span>Antigravity</button>
+            <button type="button" role="tab" id="tab-vscode" aria-controls="panel-vscode" aria-selected="false" tabindex="-1"><span class="tab-dot is-auto" aria-hidden="true"></span>VS Code</button>
+            <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Codex</button>
+            <button type="button" role="tab" id="tab-gemini" aria-controls="panel-gemini" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Gemini CLI</button>
+            <button type="button" role="tab" id="tab-windsurf" aria-controls="panel-windsurf" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Windsurf</button>
+            <button type="button" role="tab" id="tab-zed" aria-controls="panel-zed" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Zed</button>
+            <button type="button" role="tab" id="tab-opencode" aria-controls="panel-opencode" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>OpenCode</button>
+            <button type="button" role="tab" id="tab-generic" aria-controls="panel-generic" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Generic MCP</button>
+          </div>
+
+          <section class="tab-panel" id="panel-claude-code" role="tabpanel" aria-labelledby="tab-claude-code" tabindex="0">
+            <div class="panel-head">
+              <div><h3>Claude Code</h3><p>The full integration: MCP server, three session hooks, a git hook, the rule, and the skill.</p></div>
+              <span class="panel-badge is-auto">auto-configures</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-claude">npx cairn connect claude-code --git-hooks</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-claude" aria-label="Copy Claude Code setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><code>.mcp.json</code><span>Project-scope MCP server</span></li>
+                  <li><code>.claude/settings.json</code><span><code>SessionStart</code>, <code>PostToolUse</code> on edits, <code>SessionEnd</code></span></li>
+                  <li><code>CLAUDE.md</code> / <code>AGENTS.md</code><span>Marked <code>&lt;!-- cairn:start --&gt;</code> instruction block</span></li>
+                  <li><code>.claude/skills/cairn/SKILL.md</code><span>The long-form agent playbook</span></li>
+                  <li><code>.git/hooks/post-commit</code><span>Only with <code>--git-hooks</code>: captures every commit</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Restart Claude Code. The hooks inject the brief at session start, append edits to a rolling worklog, and close the session at the end.</p>
+                <p>Re-running is idempotent: existing Cairn hook groups are replaced, other hooks are preserved, and the instruction block is updated in place. Skip hooks with <code>--no-hooks</code>.</p>
+              </div>
+            </div>
+            <details class="snippet">
+              <summary>User scope instead of project scope</summary>
+              <div class="cmd cmd-dark" data-copy-scope>
+                <span class="cmd-prompt" aria-hidden="true">$</span>
+                <code id="cmd-claude-user">claude mcp add --scope user cairn -- node &lt;path-to-cairn&gt;/dist/cli/index.js mcp --vault .cairn --project &lt;project&gt; --agent claude-code</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-claude-user" aria-label="Copy user-scope command">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </details>
+          </section>
+
+          <section class="tab-panel" id="panel-cursor" role="tabpanel" aria-labelledby="tab-cursor" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Cursor</h3><p>MCP config plus an always-apply rule inside the project.</p></div>
+              <span class="panel-badge is-auto">auto-configures</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-cursor">npx cairn connect cursor</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-cursor" aria-label="Copy Cursor setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><code>.cursor/mcp.json</code><span><code>mcpServers.cairn</code></span></li>
+                  <li><code>.cursor/rules/cairn.mdc</code><span>Always-apply rule with the session contract</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Reload the window. If Cursor prompts to approve the server, approve it in MCP settings.</p>
+                <p>Cursor's own hooks are not installed automatically; the rule still teaches the read/write loop.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="panel-antigravity" role="tabpanel" aria-labelledby="tab-antigravity" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Antigravity</h3><p>Workspace MCP config, rule, instruction block, and native skill.</p></div>
+              <span class="panel-badge is-auto">auto-configures</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-antigravity">npx cairn connect antigravity</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-antigravity" aria-label="Copy Antigravity setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><code>.agents/mcp_config.json</code><span><code>mcpServers.cairn</code>, workspace scope</span></li>
+                  <li><code>.agents/rules/cairn.md</code><span>Workspace rule</span></li>
+                  <li><code>AGENTS.md</code><span>Marked instruction block</span></li>
+                  <li><code>.agents/skills/cairn/SKILL.md</code><span>The agent skill</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Open the workspace and let Antigravity load the config.</p>
+                <p>For a global install, copy the <code>mcpServers</code> block into <code>~/.gemini/config/mcp_config.json</code>.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="panel-vscode" role="tabpanel" aria-labelledby="tab-vscode" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>VS Code / GitHub Copilot</h3><p>Workspace-level MCP config with the shared instruction block.</p></div>
+              <span class="panel-badge is-auto">auto-configures</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-vscode">npx cairn connect vscode</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-vscode" aria-label="Copy VS Code setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><code>.mcp.json</code><span>VS Code's standard project-level MCP config</span></li>
+                  <li><code>AGENTS.md</code><span>Marked instruction block</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>VS Code asks for approval before starting a project MCP server. Choose <strong>Allow</strong> when the toast appears.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="panel-codex" role="tabpanel" aria-labelledby="tab-codex" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Codex</h3><p>Updates the shared instructions and prints the TOML entry.</p></div>
+              <span class="panel-badge">prints a snippet</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-codex">npx cairn connect codex</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-codex" aria-label="Copy Codex setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><code>AGENTS.md</code><span>Marked instruction block</span></li>
+                  <li><span class="file-list-plain">Prints</span><span>The TOML below — Codex config is not auto-edited</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Add the TOML to <code>~/.codex/config.toml</code>, or <code>.codex/config.toml</code> for project scope.</p>
+              </div>
+            </div>
+            <details class="snippet" open>
+              <summary>The TOML entry</summary>
+              <div class="cmd cmd-dark" data-copy-scope>
+                <code id="cmd-codex-toml" class="code-multi">[mcp_servers.cairn]
+command = "node"
+args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "--project", "&lt;project&gt;", "--agent", "codex"]</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-codex-toml" aria-label="Copy Codex TOML">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </details>
+          </section>
+          <section class="tab-panel" id="panel-gemini" role="tabpanel" aria-labelledby="tab-gemini" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Gemini CLI</h3><p>Updates <code>GEMINI.md</code> and prints the settings entry.</p></div>
+              <span class="panel-badge">prints a snippet</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-gemini">npx cairn connect gemini</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-gemini" aria-label="Copy Gemini CLI setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><code>GEMINI.md</code><span>Marked instruction block</span></li>
+                  <li><span class="file-list-plain">Prints</span><span>The JSON below — Gemini settings are not auto-edited</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Add the JSON to <code>~/.gemini/settings.json</code>, or <code>.gemini/settings.json</code> for project scope.</p>
+              </div>
+            </div>
+            <details class="snippet" open>
+              <summary>The JSON entry</summary>
+              <div class="cmd cmd-dark" data-copy-scope>
+                <code id="cmd-gemini-json" class="code-multi">{
+  "mcpServers": {
+    "cairn": {
+      "command": "node",
+      "args": ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "--project", "&lt;project&gt;", "--agent", "gemini"]
+    }
+  }
+}</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-gemini-json" aria-label="Copy Gemini JSON">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </details>
+          </section>
+
+          <section class="tab-panel" id="panel-windsurf" role="tabpanel" aria-labelledby="tab-windsurf" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Windsurf</h3><p>Prints the JSON entry for Windsurf's MCP config.</p></div>
+              <span class="panel-badge">prints a snippet</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-windsurf">npx cairn connect windsurf</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-windsurf" aria-label="Copy Windsurf setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><span class="file-list-plain">Prints</span><span>The JSON below — Windsurf config is not auto-edited</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Add it to <code>~/.codeium/windsurf/mcp_config.json</code>, or your Cortex-managed <code>mcp_config.json</code>, then reload Windsurf.</p>
+              </div>
+            </div>
+            <details class="snippet">
+              <summary>The JSON entry</summary>
+              <div class="cmd cmd-dark" data-copy-scope>
+                <code id="cmd-windsurf-json" class="code-multi">{
+  "mcpServers": {
+    "cairn": {
+      "command": "node",
+      "args": ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "--project", "&lt;project&gt;", "--agent", "windsurf"]
+    }
+  }
+}</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-windsurf-json" aria-label="Copy Windsurf JSON">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </details>
+          </section>
+
+          <section class="tab-panel" id="panel-zed" role="tabpanel" aria-labelledby="tab-zed" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Zed</h3><p>Prints the <code>context_servers</code> entry for Zed.</p></div>
+              <span class="panel-badge">prints a snippet</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-zed">npx cairn connect zed</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-zed" aria-label="Copy Zed setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><span class="file-list-plain">Prints</span><span>The JSON below — Zed config is not auto-edited</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Add it to <code>~/.config/zed/settings.json</code> under <code>context_servers</code>, then restart Zed.</p>
+              </div>
+            </div>
+            <details class="snippet">
+              <summary>The JSON entry</summary>
+              <div class="cmd cmd-dark" data-copy-scope>
+                <code id="cmd-zed-json" class="code-multi">{
+  "context_servers": {
+    "cairn": {
+      "command": "node",
+      "args": ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "--project", "&lt;project&gt;", "--agent", "zed"],
+      "env": {}
+    }
+  }
+}</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-zed-json" aria-label="Copy Zed JSON">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </details>
+          </section>
+
+          <section class="tab-panel" id="panel-opencode" role="tabpanel" aria-labelledby="tab-opencode" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>OpenCode / Omnirush</h3><p>Prints an OpenCode-style local MCP entry.</p></div>
+              <span class="panel-badge">prints a snippet</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-opencode">npx cairn connect omnirush opencode</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-opencode" aria-label="Copy OpenCode setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><span class="file-list-plain">Prints</span><span>The config below, for both handles</span></li>
+                  <li><code>.agents/skills/cairn/SKILL.md</code><span>Skill installed where supported</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>If your client manages local servers in its database or UI, add the <code>mcp.cairn</code> entry through the app instead. Approve the <code>node</code> process on first run if the client asks.</p>
+              </div>
+            </div>
+            <details class="snippet">
+              <summary>The config entry</summary>
+              <div class="cmd cmd-dark" data-copy-scope>
+                <code id="cmd-opencode-json" class="code-multi">{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "cairn": {
+      "type": "local",
+      "command": ["node", "&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "--project", "&lt;project&gt;", "--agent", "opencode"],
+      "enabled": true
+    }
+  }
+}</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-opencode-json" aria-label="Copy OpenCode config">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </details>
+          </section>
+
+          <section class="tab-panel" id="panel-generic" role="tabpanel" aria-labelledby="tab-generic" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Generic MCP client</h3><p>The standard stdio shape. Any client that accepts <code>command</code> and <code>args</code> works.</p></div>
+              <span class="panel-badge">prints a snippet</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-generic">npx cairn connect generic</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-generic" aria-label="Copy generic setup command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><span class="file-list-plain">Prints</span><span>The JSON below</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Paste it into your client's MCP config. Clients that only accept a URL need a small stdio bridge or proxy that spawns the process.</p>
+              </div>
+            </div>
+            <details class="snippet">
+              <summary>The JSON entry</summary>
+              <div class="cmd cmd-dark" data-copy-scope>
+                <code id="cmd-generic-json" class="code-multi">{
+  "mcpServers": {
+    "cairn": {
+      "command": "node",
+      "args": ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "--project", "&lt;project&gt;", "--agent", "generic"]
+    }
+  }
+}</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-generic-json" aria-label="Copy generic JSON">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </details>
+          </section>
+        </div>
+
+        <div class="install-extra reveal">
+          <div class="install-block">
+            <div class="install-block-head">
+              <div>
+                <h3>The agent gets a rule and a skill</h3>
+                <p>Both teach the same loop at different depths. Clients without skill support still get the rule.</p>
+              </div>
+              <div class="cmd cmd-inline" data-copy-scope>
+                <span class="cmd-prompt" aria-hidden="true">$</span>
+                <code id="cmd-skill">npx cairn skill --install</code>
+                <button class="copy-btn" type="button" data-copy="#cmd-skill" aria-label="Copy skill install command">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="rule-skill">
+              <article>
+                <span class="mono-label">Rule</span>
+                <h4>Always on</h4>
+                <p>A compact session contract: read first, write decisions and changes as work happens, link them, never store secrets.</p>
+                <p class="path-line"><code>CLAUDE.md</code> · <code>AGENTS.md</code> · <code>GEMINI.md</code> · <code>.cursor/rules/cairn.mdc</code> · <code>.agents/rules/cairn.md</code></p>
+              </article>
+              <article>
+                <span class="mono-label">Skill</span>
+                <h4>Loaded on demand</h4>
+                <p>The long-form playbook: the full loop, note templates, examples, the tool map, and chat behaviour.</p>
+                <p class="path-line"><code>.claude/skills/cairn/SKILL.md</code><br><code>.agents/skills/cairn/SKILL.md</code></p>
+              </article>
+            </div>
+            <p class="install-fineprint">Inspect with <code>cairn skill</code>, print with <code>--print</code> or <code>--print-rule</code>, and install both standard locations with <code>--install</code>. <code>connect</code> installs it automatically for supported clients.</p>
+          </div>
+
+          <div class="install-block">
+            <div class="install-block-head">
+              <div>
+                <h3>Project vault or global vault</h3>
+                <p>One project, one memory — or one memory across every repo, scoped by project on each note.</p>
+              </div>
+            </div>
+            <div class="table-scroll" role="region" aria-label="Vault modes" tabindex="0">
+              <table class="plain-table">
+                <caption class="sr-only">Project and global vault modes</caption>
+                <thead><tr><th scope="col">Mode</th><th scope="col">Location</th><th scope="col">Best for</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Project <span class="row-note">default</span></th><td><code>&lt;project&gt;/.cairn/</code></td><td>One project, one memory. Version or ignore the vault per your policy.</td></tr>
+                  <tr><th scope="row">Global <span class="row-note">--global</span></th><td><code>~/.cairn/</code></td><td>Many repos sharing one memory. Pass <code>--project &lt;name&gt;</code> in each client entry so writes stay separated.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="install-block">
+            <div class="install-block-head">
+              <div>
+                <h3>Connect flags</h3>
+                <p>The same command covers vault choice, scope, provenance, and a dry run.</p>
+              </div>
+            </div>
+            <div class="table-scroll" role="region" aria-label="Connect flags" tabindex="0">
+              <table class="plain-table flags-table">
+                <caption class="sr-only">cairn connect flags</caption>
+                <thead><tr><th scope="col">Flag</th><th scope="col">Effect</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row"><code>--vault &lt;path&gt;</code></th><td>Use a specific vault directory.</td></tr>
+                  <tr><th scope="row"><code>--global</code></th><td>Use <code>~/.cairn/</code> instead of the project vault.</td></tr>
+                  <tr><th scope="row"><code>--project &lt;name&gt;</code></th><td>Scope writes when the client cannot pass a project.</td></tr>
+                  <tr><th scope="row"><code>--agent &lt;handle&gt;</code></th><td>Override the author handle recorded on every note.</td></tr>
+                  <tr><th scope="row"><code>--git-hooks</code></th><td>Install the Claude Code post-commit capture hook.</td></tr>
+                  <tr><th scope="row"><code>--no-hooks</code></th><td>Wire the MCP server without Claude Code hooks.</td></tr>
+                  <tr><th scope="row"><code>--dry-run</code></th><td>Print what would change; write nothing.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <details class="snippet snippet-quiet">
+              <summary>Uninstalling Cairn</summary>
+              <p>Run <code>npx cairn connect --dry-run</code> to review what is wired. Then remove the <code>cairn</code> entry from each client config, the marked block from <code>CLAUDE.md</code> / <code>AGENTS.md</code>, the hook groups in <code>.claude/settings.json</code>, and the vault folder if you no longer want the memory.</p>
+              <p>Redacted copies of every file <code>connect</code> edited are in <code>vault/state/backups/</code>.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section section-tint" id="workspace" aria-labelledby="workspace-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">The workspace</p>
+          <h2 id="workspace-title">The graph is the point.</h2>
+          <p class="lede">Cairn ships a no-build web app for seeing what your agents know: a force-directed graph, a living brief, the timeline, inboxes, handoffs, agent presence, and project scopes. It updates over SSE the moment another agent writes.</p>
+        </header>
+
+        <figure class="workspace-hero reveal">
+          <div class="frame">
+            <div class="frame-bar">
+              <span class="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="frame-address">127.0.0.1:4242 / graph</span>
+              <span class="frame-tag">live</span>
+            </div>
+            <img src="assets/shots/graph.png" alt="The Cairn memory graph: a force-directed canvas of note nodes connected by typed edges, with a filter rail and an inspector panel." width="1440" height="1000" loading="lazy">
+          </div>
+          <figcaption><strong>The memory graph.</strong> Notes are nodes; project, agent, session, and file hubs are virtual nodes. Edges are typed. Pan, zoom, drag, filter by kind, and inspect any node without leaving the canvas.</figcaption>
+        </figure>
+
+        <div class="features reveal">
+          <article>
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg></span>
+            <h3>Living brief</h3>
+            <p>Decisions in force, attention items, recent commits, and online agents — the same brief the MCP server returns.</p>
+          </article>
+          <article>
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-graph"/></svg></span>
+            <h3>Graph canvas</h3>
+            <p>Force layout with collision-culled labels, kind filters, search highlighting, and an inspector for links and backlinks.</p>
+          </article>
+          <article>
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></span>
+            <h3>Timeline</h3>
+            <p>Every note grouped by day, filterable by agent or kind. The fastest way to catch up after time away.</p>
+          </article>
+          <article>
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-share"/></svg></span>
+            <h3>Coordination</h3>
+            <p>Inboxes, handoff boards, unread counts, and live agent presence. Work changes hands without a transcript.</p>
+          </article>
+          <article>
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></span>
+            <h3>Omnibox and capture</h3>
+            <p><kbd>⌘K</kbd> or <kbd>Ctrl K</kbd> searches and navigates. <kbd>N</kbd> captures a note from anywhere in the app.</p>
+          </article>
+          <article>
+            <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-database"/></svg></span>
+            <h3>Live, local, themeable</h3>
+            <p>SSE pushes refreshes in place. Light, dark, or system. No external fonts, scripts, or CDNs; no build step.</p>
+          </article>
+        </div>
+
+        <div class="gallery reveal">
+          <figure class="gallery-item span-7">
+            <img src="assets/shots/agents.png" alt="The Agents page: cards for each agent with online state, current project, session, note counts, and last activity." width="1440" height="1000" loading="lazy">
+            <figcaption><strong>Agents.</strong> Who is online, what they are working on, which session they are in, and how much memory they have written.</figcaption>
+          </figure>
+          <figure class="gallery-item span-5">
+            <img src="assets/shots/decisions.png" alt="The Decisions page: a filtered list of decisions with status badges, authors, dates, and links to related notes." width="1440" height="1000" loading="lazy">
+            <figcaption><strong>Decisions.</strong> Status, author, session, linked files, and the reasoning that produced them — one click from the graph.</figcaption>
+          </figure>
+          <figure class="gallery-item span-5">
+            <img src="assets/shots/timeline.png" alt="The Timeline page: activity grouped by day with kind labels and agent attribution." width="1440" height="1000" loading="lazy">
+            <figcaption><strong>Timeline.</strong> The day-by-day record, filterable by agent or kind. Useful before a handoff or after a break.</figcaption>
+          </figure>
+          <figure class="gallery-item span-7">
+            <img src="assets/shots/setup.png" alt="The Connect agents page: per-client wiring instructions and the exact MCP command with a copy button." width="1440" height="1000" loading="lazy">
+            <figcaption><strong>Connect agents.</strong> Repeats the exact MCP command for every supported client, ready to paste, with the same copy button as the CLI.</figcaption>
+          </figure>
+          <figure class="gallery-item span-7">
+            <img src="assets/shots/home-dark.png" alt="The Cairn workspace in dark theme: brief, counts, recent decisions, and the memory map on a near-black warm background." width="1440" height="1000" loading="lazy">
+            <figcaption><strong>Dark, light, or system.</strong> Typography-first, with no external UI dependencies. The theme follows the OS unless you choose otherwise.</figcaption>
+          </figure>
+          <figure class="gallery-item span-5 detail-phone">
+            <div class="phone-frame">
+              <img src="assets/shots/mobile.png" alt="The Cairn workspace at phone width: the brief and navigation stacked into a single column." width="390" height="844" loading="lazy">
+            </div>
+            <figcaption><strong>At 390px.</strong> Navigation collapses, the brief stacks, the graph still pans, and capture still works.</figcaption>
+          </figure>
+        </div>
+
+        <p class="workspace-note reveal">The workspace is served from the same Node process as the API. Run <code>npx cairn ui --open</code> to launch it directly, or let <code>npx cairn</code> do both.</p>
+      </div>
+    </section>
+    <section class="section plate" id="security" aria-labelledby="security-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow plate-eyebrow">Security &amp; ownership</p>
+          <h2 id="security-title">Local by default.<br><span class="plate-muted">Yours by construction.</span></h2>
+          <p class="lede">The workspace and API are password-gated and bound to loopback. The memory is plain Markdown on your disk. No account, no telemetry, no hosted copy.</p>
+        </header>
+
+        <div class="security-grid reveal">
+          <div class="security-aside">
+            <h3>One folder to back up</h3>
+            <p>The vault is the whole product. Copy it, sync it, version it, or move it to another machine. Cairn rebuilds everything else.</p>
+            <pre class="vault-tree">.cairn/
+├── cairn.config.json      <span class="tree-note">name · project · settings</span>
+├── README.md              <span class="tree-note">generated orientation</span>
+├── notes/
+│   ├── decisions/         <span class="tree-note">2026-11-17-decision-…md</span>
+│   ├── changes/
+│   ├── questions/
+│   └── …                  <span class="tree-note">one folder per kind</span>
+└── state/
+    ├── auth.json          <span class="tree-note">scrypt hash + secret · 0600</span>
+    ├── .write.lock        <span class="tree-note">cross-process lock</span>
+    ├── sessions/
+    ├── inbox/
+    └── backups/           <span class="tree-note">redacted client files · max 40</span></pre>
+            <div class="cmd cmd-dark code-multi-wrap" data-copy-scope>
+              <code id="cmd-auth" class="code-multi">npx cairn auth status
+npx cairn auth reset
+CAIRN_NEW_PASSWORD=… npx cairn auth set-password</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-auth" aria-label="Copy password management commands">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <p class="security-fineprint">Reset and set-password rotate the session secret, signing out every browser. The first-run generated password cannot open a lasting session; the login page forces a replacement.</p>
+            <ul class="ownership-list" aria-label="Ownership properties">
+              <li><strong>Back up</strong><span>Copy <code>.cairn/</code>. No database dump, no export step.</span></li>
+              <li><strong>Share</strong><span>Hand a teammate the folder. The files already make sense.</span></li>
+              <li><strong>Inspect</strong><span>Open it in Obsidian, grep it, or diff it in git.</span></li>
+              <li><strong>Leave</strong><span>Delete the folder. No remote copy remains.</span></li>
+            </ul>
+          </div>
+
+          <div class="guarantees">
+            <article class="guarantee">
+              <span class="guarantee-icon"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg></span>
+              <div><h3>Password by default</h3><p>The UI and API require a session. Passwords are salted scrypt hashes with 64-byte keys; the session secret never leaves <code>state/auth.json</code>. Only health, login, auth status, and login assets are public.</p></div>
+            </article>
+            <article class="guarantee">
+              <span class="guarantee-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+              <div><h3>Hardened sessions</h3><p>HMAC-signed <code>HttpOnly</code>, <code>SameSite=Strict</code> cookies with a 12-hour TTL and an in-memory server-side allowlist. Logout, reset, or restart revokes immediately. Failed logins are throttled per client address.</p></div>
+            </article>
+            <article class="guarantee">
+              <span class="guarantee-icon"><svg class="icon" aria-hidden="true"><use href="#i-terminal"/></svg></span>
+              <div><h3>Request guards</h3><p><code>Host</code> is parsed and allowlisted before URL handling. Mutations require JSON content type, an allowed <code>Origin</code>, <code>Sec-Fetch-Site</code>, and a session-bound double-submit CSRF token.</p></div>
+            </article>
+            <article class="guarantee">
+              <span class="guarantee-icon"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg></span>
+              <div><h3>Redaction at the boundary</h3><p>Titles, bodies, backups, and requested diffs are scanned for private keys, cloud and API token shapes, and <code>password=</code> / <code>api_key=</code> / <code>token=</code> assignments before they land.</p></div>
+            </article>
+            <article class="guarantee">
+              <span class="guarantee-icon"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg></span>
+              <div><h3>Capture filters</h3><p><code>.env*</code>, credential stores, key files, dependency and build directories, lockfiles, binary media, and the vault itself are skipped. Diffs are omitted unless explicitly requested; captures record what changed, never the patch body.</p></div>
+            </article>
+            <article class="guarantee">
+              <span class="guarantee-icon"><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg></span>
+              <div><h3>Files and concurrency</h3><p>Writes are atomic (temp file + rename) with <code>0600</code> files and <code>0700</code> directories on POSIX. A reentrant cross-process lock is shared by MCP, CLI, and UI. Backups are redacted, capped at 40, and private.</p></div>
+            </article>
+          </div>
+        </div>
+
+        <aside class="honesty reveal" aria-labelledby="honesty-title">
+          <div class="honesty-head">
+            <span class="honesty-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+            <div>
+              <h3 id="honesty-title">The boundary, stated plainly</h3>
+              <p>A security page that hides its limits isn't one. These are the parts Cairn does not pretend to solve.</p>
+            </div>
+          </div>
+          <ul class="honesty-list">
+            <li><strong>MCP is outside the web password.</strong> It is a stdio process launched by your coding client. It runs as your OS user and reads/writes the vault directly.</li>
+            <li><strong>The memory is plaintext on disk.</strong> Anyone with filesystem access can read it. There is one shared workspace password, no per-user accounts, and no audit log.</li>
+            <li><strong>Redaction is best effort.</strong> It is pattern-based, not a guarantee. <code>redact: false</code> in the vault config turns it off.</li>
+            <li><strong>Remote access needs a proxy.</strong> Set <code>CAIRN_ALLOWED_HOSTS</code>, terminate TLS in front, set <code>CAIRN_SECURE_COOKIE=1</code>, and pass <code>--allow-remote</code>. Never port-forward the raw HTTP port.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+    <section class="section" id="deploy" aria-labelledby="deploy-title">
+      <div class="wrap">
+        <header class="section-head reveal">
+          <p class="eyebrow">Deploy</p>
+          <h2 id="deploy-title">Run it on a laptop.<br><span class="h-muted">Or a team server.</span></h2>
+          <p class="lede">Cairn is one Node process with a folder for state. The Docker image is multi-arch, runs as an unprivileged user, and expects TLS in front when you expose it.</p>
+        </header>
+
+        <div class="deploy-grid reveal">
+          <div class="deploy-code">
+            <h3>Docker, one command</h3>
+            <div class="cmd cmd-dark code-multi-wrap" data-copy-scope>
+              <code id="cmd-docker" class="code-multi">docker run -d \
+  -p 4242:4242 \
+  -v cairn_data:/data \
+  -e CAIRN_ALLOWED_HOSTS="cairn.example.com" \
+  -e CAIRN_PASSWORD="YourSecurePasswordHere" \
+  --name cairn \
+  ghcr.io/arshdeep-yadav/cairn:latest</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-docker" aria-label="Copy Docker command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <p class="deploy-fine">The image starts with <code>--host 0.0.0.0 --allow-remote</code>, stores the vault at <code>/data/.cairn</code>, and probes <code>/api/health</code>. Add <code>CAIRN_SECURE_COOKIE=1</code> once HTTPS is in front.</p>
+            <ul class="deploy-checklist">
+              <li><strong>TLS in front</strong><span>Caddy, Fly, or your load balancer terminates HTTPS. Cairn speaks plain HTTP on 4242.</span></li>
+              <li><strong>Allowlist the host</strong><span>Set <code>CAIRN_ALLOWED_HOSTS</code> to the exact public hostname — not a wildcard.</span></li>
+              <li><strong>Keep the volume</strong><span><code>/data</code> holds the entire memory. Without it, the container starts empty.</span></li>
+              <li><strong>Never publish raw HTTP</strong><span>No direct port-forward, no public 4242. Put a proxy and a password in front.</span></li>
+            </ul>
+          </div>
+
+          <div class="deploy-env">
+            <h3>Environment</h3>
+            <div class="table-scroll" role="region" aria-label="Environment variables" tabindex="0">
+              <table class="plain-table env-table">
+                <caption class="sr-only">Cairn environment variables</caption>
+                <thead><tr><th scope="col">Variable</th><th scope="col">Default</th><th scope="col">Purpose</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row"><code>CAIRN_ALLOW_REMOTE</code></th><td><code>0</code></td><td>Allow a non-loopback bind. Required outside Docker unless the flag is passed.</td></tr>
+                  <tr><th scope="row"><code>CAIRN_ALLOWED_HOSTS</code></th><td>empty</td><td>Comma-separated hostnames accepted in the <code>Host</code> header. Required for any remote bind.</td></tr>
+                  <tr><th scope="row"><code>CAIRN_SECURE_COOKIE</code></th><td><code>0</code></td><td>Marks auth cookies <code>Secure</code>. Set it when TLS terminates in front.</td></tr>
+                  <tr><th scope="row"><code>CAIRN_PASSWORD</code></th><td>generated</td><td>Sets the workspace password non-interactively on first run. Minimum 12 characters.</td></tr>
+                  <tr><th scope="row"><code>PORT</code></th><td><code>4242</code></td><td>Listening port.</td></tr>
+                  <tr><th scope="row"><code>HOST</code></th><td><code>127.0.0.1</code></td><td>Listening address. The image sets <code>0.0.0.0</code>.</td></tr>
+                  <tr><th scope="row"><code>CAIRN_VAULT</code></th><td>cwd</td><td>Directory containing the vault. The image sets <code>/data/.cairn</code>.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="recipes reveal">
+          <a class="recipe" href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/cloud-deployment.md" rel="noopener">
+            <span class="recipe-kicker">Compose + Caddy</span>
+            <h3>Automated HTTPS</h3>
+            <p>One compose file provisions Let's Encrypt, redirects HTTP, and proxies to 4242.</p>
+            <span class="recipe-link">Deployment guide <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></span>
+          </a>
+          <a class="recipe" href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/cloud-deployment.md" rel="noopener">
+            <span class="recipe-kicker">Fly.io</span>
+            <h3>Volume + secret</h3>
+            <p>Mount <code>/data</code>, set <code>CAIRN_ALLOWED_HOSTS</code>, force HTTPS, and deploy.</p>
+            <span class="recipe-link">Deployment guide <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></span>
+          </a>
+          <a class="recipe" href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/cloud-deployment.md" rel="noopener">
+            <span class="recipe-kicker">Railway · Render</span>
+            <h3>Persistent volume</h3>
+            <p>Mount a volume at <code>/data</code> and set the environment from the table above.</p>
+            <span class="recipe-link">Deployment guide <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></span>
+          </a>
+          <a class="recipe" href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/cloud-deployment.md" rel="noopener">
+            <span class="recipe-kicker">Linux VPS</span>
+            <h3>systemd unit</h3>
+            <p>Run as a dedicated user, bind <code>0.0.0.0</code>, and keep the vault in <code>/var/lib/cairn</code>.</p>
+            <span class="recipe-link">Deployment guide <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tint" id="faq" aria-labelledby="faq-title">
+      <div class="wrap faq-layout">
+        <aside class="faq-aside reveal">
+          <p class="eyebrow">Questions</p>
+          <h2 id="faq-title">The parts people ask about.</h2>
+          <p>Short answers, with links to the source when you want the long version.</p>
+          <div class="faq-links">
+            <a href="#architecture">Architecture <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            <a href="#mcp">MCP reference <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            <a href="https://github.com/Arshdeep-Yadav/Cairn#readme" rel="noopener">Full README <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
+          </div>
+        </aside>
+
+        <div class="faq-list reveal">
+          <details>
+            <summary>Is Cairn a database?</summary>
+            <p>No. A vault is a folder of Markdown files with YAML frontmatter. Cairn builds an in-memory graph index at startup and throws it away on exit. There are no migrations, no index files to corrupt, and no lock-in.</p>
+          </details>
+          <details>
+            <summary>Does anything leave my machine?</summary>
+            <p>No. Cairn has no telemetry, no hosted service, and no external fonts, scripts, or CDNs. The workspace binds to <code>127.0.0.1</code> by default. If you deploy the container yourself, the data goes wherever you put the volume.</p>
+          </details>
+          <details>
+            <summary>What happens when two agents write at once?</summary>
+            <p>Read-modify-write operations take a reentrant cross-process lock at <code>state/.write.lock</code>, shared by the MCP server, the CLI, and the UI. Individual writes are atomic: temp file, then rename. On POSIX, files are <code>0600</code>.</p>
+          </details>
+          <details>
+            <summary>Can I open the vault in Obsidian or edit notes by hand?</summary>
+            <p>Yes. The folder is plain Markdown. Wikilinks and aliases keep Obsidian links resolving, and frontmatter fields create the graph edges. Everything is editable except <code>id</code>, which the graph uses as identity.</p>
+          </details>
+          <details>
+            <summary>Do I need git?</summary>
+            <p>Only for commit capture. <code>capture_changes</code> and the post-commit hook read git; without a repository, agents can still write change notes manually with a files list. The rest of Cairn is independent of git.</p>
+          </details>
+          <details>
+            <summary>Can one vault serve multiple repositories?</summary>
+            <p>Yes. Initialize a global vault with <code>--global</code> at <code>~/.cairn/</code>, point each client at it, and pass <code>--project &lt;name&gt;</code> in the server entry. Notes carry their project scope, and tools can search across all projects.</p>
+          </details>
+          <details>
+            <summary>What happens if I delete a note others link to?</summary>
+            <p>The note disappears; a <code>missing</code> placeholder node stays so the graph never has a dangling reference. Backlinks and the inspector show the gap instead of silently rewriting history.</p>
+          </details>
+          <details>
+            <summary>How is this different from a long context window or a CLAUDE.md file?</summary>
+            <p>Those live with one session or one repository and are rewritten wholesale. Cairn is queryable, append-only by default, shared across agents, and typed: a decision can link to the change that implements it and the risk that blocks it. Context is supplied; memory is maintained.</p>
+          </details>
+          <details>
+            <summary>Which clients are supported?</summary>
+            <p>Claude Code, Cursor, Antigravity, VS Code / GitHub Copilot, Codex, Gemini CLI, Windsurf, Zed, OpenCode, Omnirush, and any MCP client that accepts a stdio command. Four are configured automatically; the rest print a snippet.</p>
+          </details>
+          <details>
+            <summary>What is the license and current version?</summary>
+            <p>MIT. The current release is 0.1.0, requires Node 20 or newer, and ships with no native binaries.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+    <section class="section cta-section" id="start" aria-labelledby="cta-title">
+      <div class="wrap">
+        <div class="cta-card reveal">
+          <img class="cta-mark" src="assets/brand/favicon.svg" alt="" width="280" height="280" loading="lazy">
+          <div class="cta-content">
+            <p class="eyebrow">Start here</p>
+            <h2 id="cta-title">Your agents will forget this session.<br><em>Give them somewhere to put it.</em></h2>
+            <p>One command creates the vault, serves the workspace, and prints a password. Add a client, and the next session starts with context instead of a blank page.</p>
+            <div class="cmd cmd-hero cta-cmd" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-cta">npx cairn</code>
+              <button class="copy-btn" type="button" data-copy="#cmd-cta" aria-label="Copy the npx cairn command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="cta-actions">
+              <a class="btn btn-primary" href="https://github.com/Arshdeep-Yadav/Cairn" rel="noopener">
+                <svg class="icon" aria-hidden="true"><use href="#i-github"/></svg>
+                View on GitHub
+              </a>
+              <a class="btn btn-secondary" href="https://github.com/Arshdeep-Yadav/Cairn#readme" rel="noopener">Read the README</a>
+            </div>
+            <p class="cta-meta">Node 20+ · MIT · no telemetry · no hosted copy</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="#top" aria-label="Cairn — back to top">
+          <img src="assets/brand/favicon.svg" alt="" width="36" height="36">
+          <span class="brand-name">Cairn</span>
+        </a>
+        <p>Shared graph memory for coding agents.</p>
+        <p class="footer-fine">Local-first. Markdown you own. Built to outlast the chat window.</p>
+      </div>
+      <nav class="footer-col" aria-label="Product">
+        <h3>Product</h3>
+        <a href="#why">Why Cairn</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#mcp">MCP reference</a>
+        <a href="#install">Install</a>
+        <a href="#workspace">Workspace</a>
+      </nav>
+      <nav class="footer-col" aria-label="Documentation">
+        <h3>Docs</h3>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn#quickstart" rel="noopener">Quickstart</a>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/clients.md" rel="noopener">Client wiring</a>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/architecture.md" rel="noopener">Architecture notes</a>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/cloud-deployment.md" rel="noopener">Cloud deployment</a>
+        <a href="#security">Security posture</a>
+      </nav>
+      <nav class="footer-col" aria-label="Project">
+        <h3>Project</h3>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn" rel="noopener">GitHub</a>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn/issues" rel="noopener">Issues</a>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn/releases" rel="noopener">Releases</a>
+        <a href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/LICENSE" rel="noopener">MIT License</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>© <span data-year>2026</span> Cairn. MIT licensed.</p>
+      <p>This page is static HTML, CSS, and vanilla JavaScript — no framework, no trackers, no external requests.</p>
+    </div>
+  </footer>
+
+  <script src="main.js" defer></script>
+</body>
+</html>
