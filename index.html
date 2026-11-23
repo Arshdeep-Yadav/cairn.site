@@ -136,8 +136,8 @@
 
           <div class="cmd cmd-hero" data-copy-scope>
             <span class="cmd-prompt" aria-hidden="true">$</span>
-            <code id="cmd-hero">npx cairn</code>
-            <button class="copy-btn" type="button" data-copy="#cmd-hero" aria-label="Copy the npx cairn command">
+            <code id="cmd-hero">npm i -g github:Arshdeep-Yadav/Cairn</code>
+            <button class="copy-btn" type="button" data-copy="#cmd-hero" aria-label="Copy the Cairn install command">
               <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
               <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
               <span data-copy-label>Copy</span>
@@ -837,15 +837,15 @@ link the follow-up spec.</code></pre>
       <div class="wrap">
         <header class="section-head reveal">
           <p class="eyebrow">Install</p>
-          <h2 id="install-title">Two commands to a shared memory.</h2>
-          <p class="lede">Node 20 or newer. Run from the project root; Cairn creates <code>.cairn/</code> if it doesn't exist. Every install step is idempotent, and every file it touches is backed up first.</p>
+          <h2 id="install-title">Install once. Then two commands.</h2>
+          <p class="lede">Node 20 or newer. The npm names <code>cairn</code> and <code>cairn-memory</code> belong to unrelated packages, so Cairn installs directly from its GitHub source. Run the launch and wiring commands from your project root; Cairn creates <code>.cairn/</code> if it doesn't exist. Every step is idempotent, and every file it touches is backed up first.</p>
         </header>
 
         <div class="prereq reveal">
           <span class="prereq-label">Before you start</span>
           <code>node --version</code><span class="prereq-arrow" aria-hidden="true">→</span><span>v20 or newer</span>
           <span class="prereq-div" aria-hidden="true"></span>
-          <span>npm available via <code>npx</code></span>
+          <span>npm available (<code>npm --version</code>)</span>
           <span class="prereq-div" aria-hidden="true"></span>
           <span>Git optional — only <code>capture_changes</code> commit scope needs it</span>
         </div>
@@ -853,12 +853,12 @@ link the follow-up spec.</code></pre>
         <ol class="install-steps" data-stagger>
           <li>
             <span class="step-num">01</span>
-            <h3>Launch</h3>
-            <p>First run creates the vault, starts the workspace, and prints a one-time password. Replace it at the first login — the generated password cannot open a lasting session.</p>
+            <h3>Install the CLI</h3>
+            <p>The installer checks Node, builds from source, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. Windows: <code>irm …/install.ps1 | iex</code>. No install? <code>npx --yes --package github:Arshdeep-Yadav/Cairn cairn</code>.</p>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-launch">npx cairn</code>
-              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-launch" aria-label="Copy launch command">
+              <code id="cmd-install">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install" aria-label="Copy the CLI install command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
                 <span data-copy-label>Copy</span>
@@ -867,12 +867,12 @@ link the follow-up spec.</code></pre>
           </li>
           <li>
             <span class="step-num">02</span>
-            <h3>Wire a client</h3>
-            <p>Writes the MCP entry, the always-on rule, and — where supported — the skill and hooks. Add several clients in one command.</p>
+            <h3>Launch</h3>
+            <p>First run creates the vault, starts the workspace, and prints a one-time password. Replace it at the first login — the generated password cannot open a lasting session.</p>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-wire">npx cairn connect claude-code --git-hooks</code>
-              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-wire" aria-label="Copy client wiring command">
+              <code id="cmd-launch">cairn</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-launch" aria-label="Copy launch command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
                 <span data-copy-label>Copy</span>
@@ -881,11 +881,25 @@ link the follow-up spec.</code></pre>
           </li>
           <li>
             <span class="step-num">03</span>
+            <h3>Wire a client</h3>
+            <p>Writes the MCP entry, the always-on rule, and — where supported — the skill and hooks. Add several clients in one command.</p>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-wire">cairn connect claude-code --git-hooks</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-wire" aria-label="Copy client wiring command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">04</span>
             <h3>Verify</h3>
             <p><code>status</code> prints the vault, note count, live workspace, wired clients, and the exact MCP command. <code>doctor</code> is a read-only health check.</p>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-verify">npx cairn status</code>
+              <code id="cmd-verify">cairn status</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-verify" aria-label="Copy status command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -927,7 +941,7 @@ link the follow-up spec.</code></pre>
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-claude">npx cairn connect claude-code --git-hooks</code>
+              <code id="cmd-claude">cairn connect claude-code --git-hooks</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-claude" aria-label="Copy Claude Code setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -972,7 +986,7 @@ link the follow-up spec.</code></pre>
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-cursor">npx cairn connect cursor</code>
+              <code id="cmd-cursor">cairn connect cursor</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-cursor" aria-label="Copy Cursor setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1002,7 +1016,7 @@ link the follow-up spec.</code></pre>
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-antigravity">npx cairn connect antigravity</code>
+              <code id="cmd-antigravity">cairn connect antigravity</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-antigravity" aria-label="Copy Antigravity setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1034,7 +1048,7 @@ link the follow-up spec.</code></pre>
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-vscode">npx cairn connect vscode</code>
+              <code id="cmd-vscode">cairn connect vscode</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-vscode" aria-label="Copy VS Code setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1063,7 +1077,7 @@ link the follow-up spec.</code></pre>
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-codex">npx cairn connect codex</code>
+              <code id="cmd-codex">cairn connect codex</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-codex" aria-label="Copy Codex setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1104,7 +1118,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-gemini">npx cairn connect gemini</code>
+              <code id="cmd-gemini">cairn connect gemini</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-gemini" aria-label="Copy Gemini CLI setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1151,7 +1165,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-windsurf">npx cairn connect windsurf</code>
+              <code id="cmd-windsurf">cairn connect windsurf</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-windsurf" aria-label="Copy Windsurf setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1197,7 +1211,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-zed">npx cairn connect zed</code>
+              <code id="cmd-zed">cairn connect zed</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-zed" aria-label="Copy Zed setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1244,7 +1258,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-opencode">npx cairn connect omnirush opencode</code>
+              <code id="cmd-opencode">cairn connect omnirush opencode</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-opencode" aria-label="Copy OpenCode setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1293,7 +1307,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-generic">npx cairn connect generic</code>
+              <code id="cmd-generic">cairn connect generic</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-generic" aria-label="Copy generic setup command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1342,7 +1356,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
               </div>
               <div class="cmd cmd-inline" data-copy-scope>
                 <span class="cmd-prompt" aria-hidden="true">$</span>
-                <code id="cmd-skill">npx cairn skill --install</code>
+                <code id="cmd-skill">cairn skill --install</code>
                 <button class="copy-btn" type="button" data-copy="#cmd-skill" aria-label="Copy skill install command">
                   <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                   <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1410,7 +1424,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <details class="snippet snippet-quiet">
               <summary>Uninstalling Cairn</summary>
-              <p>Run <code>npx cairn connect --dry-run</code> to review what is wired. Then remove the <code>cairn</code> entry from each client config, the marked block from <code>CLAUDE.md</code> / <code>AGENTS.md</code>, the hook groups in <code>.claude/settings.json</code>, and the vault folder if you no longer want the memory.</p>
+              <p>Remove the CLI with <code>curl -fsSL …/install.sh | sh -s -- --uninstall</code> (or <code>npm uninstall -g cairn-memory</code>). Run <code>cairn connect --dry-run</code> to review what is wired. Then remove the <code>cairn</code> entry from each client config, the marked block from <code>CLAUDE.md</code> / <code>AGENTS.md</code>, the hook groups in <code>.claude/settings.json</code>, and the vault folder if you no longer want the memory.</p>
               <p>Redacted copies of every file <code>connect</code> edited are in <code>vault/state/backups/</code>.</p>
             </details>
           </div>
@@ -1499,7 +1513,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
           </figure>
         </div>
 
-        <p class="workspace-note reveal">The workspace is served from the same Node process as the API. Run <code>npx cairn ui --open</code> to launch it directly, or let <code>npx cairn</code> do both.</p>
+        <p class="workspace-note reveal">The workspace is served from the same Node process as the API. Run <code>cairn ui --open</code> to launch it directly, or let <code>cairn</code> do both.</p>
       </div>
     </section>
     <section class="section plate" id="security" aria-labelledby="security-title">
@@ -1529,9 +1543,9 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
     ├── inbox/
     └── backups/           <span class="tree-note">redacted client files · max 40</span></pre>
             <div class="cmd cmd-dark code-multi-wrap" data-copy-scope>
-              <code id="cmd-auth" class="code-multi">npx cairn auth status
-npx cairn auth reset
-CAIRN_NEW_PASSWORD=… npx cairn auth set-password</code>
+              <code id="cmd-auth" class="code-multi">cairn auth status
+cairn auth reset
+CAIRN_NEW_PASSWORD=… cairn auth set-password</code>
               <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-auth" aria-label="Copy password management commands">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -1690,6 +1704,10 @@ CAIRN_NEW_PASSWORD=… npx cairn auth set-password</code>
 
         <div class="faq-list reveal">
           <details>
+            <summary>Why doesn’t <code>npx cairn</code> work?</summary>
+            <p>Because the npm name <code>cairn</code> belongs to an unrelated package, and <code>cairn-memory</code> is taken too. Install from the GitHub source with <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>, or run <code>npx --yes --package github:Arshdeep-Yadav/Cairn cairn</code> without installing.</p>
+          </details>
+          <details>
             <summary>Is Cairn a database?</summary>
             <p>No. A vault is a folder of Markdown files with YAML frontmatter. Cairn builds an in-memory graph index at startup and throws it away on exit. There are no migrations, no index files to corrupt, and no lock-in.</p>
           </details>
@@ -1742,8 +1760,8 @@ CAIRN_NEW_PASSWORD=… npx cairn auth set-password</code>
             <p>One command creates the vault, serves the workspace, and prints a password. Add a client, and the next session starts with context instead of a blank page.</p>
             <div class="cmd cmd-hero cta-cmd" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-cta">npx cairn</code>
-              <button class="copy-btn" type="button" data-copy="#cmd-cta" aria-label="Copy the npx cairn command">
+              <code id="cmd-cta">cairn</code>
+              <button class="copy-btn" type="button" data-copy="#cmd-cta" aria-label="Copy the cairn command">
                 <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
                 <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
                 <span data-copy-label>Copy</span>
