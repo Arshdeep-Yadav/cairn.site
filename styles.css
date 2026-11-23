@@ -50,6 +50,9 @@
   --r-lg: 18px;
   --r-xl: 24px;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
   --font-ui: "Aptos", "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
@@ -418,10 +421,27 @@ button {
   color: var(--ink);
 }
 
-.theme-toggle .icon-sun { display: none; }
-.theme-toggle .icon-moon { display: block; }
-[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
-[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+.theme-toggle {
+  position: relative;
+}
+
+.theme-toggle .icon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  transition: opacity 0.18s var(--ease), transform 0.24s var(--ease-out);
+}
+
+.theme-toggle .icon-sun { opacity: 0; transform: rotate(-90deg) scale(0.82); }
+.theme-toggle .icon-moon { opacity: 1; transform: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { opacity: 1; transform: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(90deg) scale(0.82); }
+
+/* The theme switch suppresses the page-wide colour crossfade; the toggle icon
+   itself still gets to move, because that is the feedback for the action. */
+.is-theme-switching .theme-toggle .icon {
+  transition: opacity 0.18s var(--ease), transform 0.24s var(--ease-out) !important;
+}
 
 .text-btn {
   display: inline-flex;
@@ -548,7 +568,8 @@ button {
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.16s var(--ease), color 0.16s var(--ease), border-color 0.16s var(--ease);
+  transition: background-color 0.16s var(--ease), color 0.16s var(--ease), border-color 0.16s var(--ease),
+    transform 0.12s var(--ease);
 }
 
 .copy-btn:hover {
@@ -556,6 +577,8 @@ button {
   color: var(--ink);
   border-color: var(--line-strong);
 }
+
+.copy-btn:active { transform: scale(0.97); }
 
 .copy-btn .icon { width: 13px; height: 13px; }
 .copy-btn .icon-done { display: none; }
@@ -692,6 +715,38 @@ button {
   content: "·";
   margin: 0 10px;
   color: var(--line-strong);
+}
+
+/* The product shot is the LCP element, so it is painted immediately. Only the
+   copy above it enters; the small note card follows once the frame has landed. */
+@keyframes hero-copy-in {
+  from { opacity: 0; translate: 0 14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes note-card-in {
+  from { opacity: 0; translate: 0 8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero .eyebrow,
+  .hero h1,
+  .hero-lede,
+  .hero-actions,
+  .hero .cmd-hero,
+  .hero-facts {
+    animation: hero-copy-in 0.6s var(--ease-out) backwards;
+  }
+
+  .hero .eyebrow { animation-delay: 0.03s; }
+  .hero h1 { animation-delay: 0.09s; }
+  .hero-lede { animation-delay: 0.16s; }
+  .hero-actions { animation-delay: 0.23s; }
+  .hero .cmd-hero { animation-delay: 0.3s; }
+  .hero-facts { animation-delay: 0.37s; }
+
+  .note-peek { animation: note-card-in 0.5s var(--ease-out) 0.55s backwards; }
 }
 
 .hero-visual {
@@ -880,14 +935,36 @@ button {
 
 .has-reveal .reveal {
   opacity: 0;
-  transform: translateY(18px);
+  translate: 0 16px;
 }
 
 .has-reveal .reveal.is-revealed {
   opacity: 1;
-  transform: none;
-  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  translate: 0 0;
+  transition: opacity 0.55s var(--ease-out), translate 0.55s var(--ease-out);
 }
+
+.has-reveal [data-stagger] > * {
+  opacity: 0;
+  translate: 0 12px;
+}
+
+.has-reveal [data-stagger].is-revealed > * {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 0.5s var(--ease-out), translate 0.5s var(--ease-out);
+  transition-delay: calc(var(--stagger-i, 0) * var(--stagger-step, 40ms));
+}
+
+.kinds,
+.kinds-extra,
+.features { --stagger-step: 35ms; }
+.gallery,
+.recipes { --stagger-step: 45ms; }
+.loop,
+.install-steps,
+.contract { --stagger-step: 55ms; }
+.arch-stack { --stagger-step: 65ms; }
 
 .is-theme-switching *,
 .is-theme-switching *::before,
@@ -1351,7 +1428,7 @@ button {
   left: 48px;
   top: 0;
   bottom: 0;
-  border-left: 1.5px solid rgba(224, 138, 94, 0.5);
+  border-left: 1.5px solid color-mix(in srgb, var(--plate-accent) 50%, transparent);
 }
 
 .arch-link::after {
@@ -1377,11 +1454,33 @@ button {
 
 .arch-link.is-derived::before {
   border-left-style: dashed;
-  border-left-color: rgba(241, 236, 225, 0.3);
+  border-left-color: var(--plate-muted-2);
 }
 
 .arch-link.is-derived::after {
-  border-color: rgba(241, 236, 225, 0.4);
+  border-color: var(--plate-muted);
+}
+
+/* Connectors draw downward as the stack reveals; the arrow follows the line. */
+@media (prefers-reduced-motion: no-preference) {
+  .has-reveal .arch-stack .arch-link::before {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+
+  .has-reveal .arch-stack .arch-link::after { opacity: 0; }
+
+  .has-reveal .arch-stack.is-revealed .arch-link::before {
+    transform: scaleY(1);
+    transition: transform 0.45s var(--ease-out);
+    transition-delay: calc(var(--stagger-i, 0) * 65ms + 100ms);
+  }
+
+  .has-reveal .arch-stack.is-revealed .arch-link::after {
+    opacity: 1;
+    transition: opacity 0.25s var(--ease-out);
+    transition-delay: calc(var(--stagger-i, 0) * 65ms + 420ms);
+  }
 }
 
 .arch figcaption {
@@ -1452,10 +1551,12 @@ button {
   transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 
-.kind:hover {
-  border-color: var(--line-strong);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+@media (hover: hover) and (pointer: fine) {
+  .kind:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
 .kind-decision { --kind-color: var(--moss); }
@@ -2199,6 +2300,13 @@ button {
 
 .tab-panel[hidden] { display: none; }
 
+@keyframes panel-in {
+  from { opacity: 0; translate: 0 5px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+.tab-panel.is-active { animation: panel-in 0.24s var(--ease-out) both; }
+
 .tab-panel:focus-visible { outline-offset: -2px; }
 
 .panel-head {
@@ -2346,11 +2454,13 @@ button {
 
 .install-extra {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   margin-top: clamp(36px, 4vw, 52px);
 }
 
 .install-block {
+  min-width: 0;
   padding: clamp(20px, 3vw, 30px);
   border: 1px solid var(--line);
   border-radius: var(--r-md);
@@ -2868,10 +2978,12 @@ button {
   transition: border-color 0.18s var(--ease), transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
 }
 
-.recipe:hover {
-  border-color: var(--line-strong);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+@media (hover: hover) and (pointer: fine) {
+  .recipe:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
 .recipe-kicker {
@@ -2906,10 +3018,12 @@ button {
   color: var(--ink-2);
 }
 
-.recipe:hover .recipe-link { color: var(--accent-ink); }
-
 .recipe-link .icon { width: 13px; height: 13px; transition: transform 0.18s var(--ease); }
-.recipe:hover .recipe-link .icon { transform: translate(1px, -1px); }
+
+@media (hover: hover) and (pointer: fine) {
+  .recipe:hover .recipe-link { color: var(--accent-ink); }
+  .recipe:hover .recipe-link .icon { transform: translate(1px, -1px); }
+}
 
 /* -------------------------------------------------------------------- FAQ */
 
@@ -3168,9 +3282,13 @@ button {
     box-shadow: var(--shadow-md);
     transform: translateY(-130%);
     visibility: hidden;
-    transition: transform 0.28s var(--ease), visibility 0.28s;
+    transition: transform 0.32s var(--ease-drawer), visibility 0s linear 0.32s;
   }
-  .site-nav.is-open { transform: none; visibility: visible; }
+  .site-nav.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.32s var(--ease-drawer), visibility 0s;
+  }
   .site-nav a { min-height: 44px; padding-inline: 12px; font-size: 0.95rem; }
   .menu-toggle { display: inline-grid; }
   .header-cta { display: none; }
@@ -3185,7 +3303,7 @@ button {
   .specimen,
   .security-grid,
   .deploy-grid,
-  .faq-layout { grid-template-columns: 1fr; }
+  .faq-layout { grid-template-columns: minmax(0, 1fr); }
 
   .compare-before { border-right: 0; border-bottom: 1px solid var(--line); }
   .pull { align-items: start; }
@@ -3222,9 +3340,11 @@ button {
   .arch-toolbar { flex-direction: column; align-items: flex-start; }
   .arch-legend { gap: 10px; }
   .arch figcaption { font-size: 0.7rem; }
+  .cmd code { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .cmd .code-multi { white-space: pre; overflow-wrap: normal; }
   .contract { grid-template-columns: 1fr; }
   .contract p { max-width: 60ch; }
-  .install-steps { grid-template-columns: 1fr; }
+  .install-steps { grid-template-columns: minmax(0, 1fr); }
   .install-steps > li { min-height: 0; }
   .install-steps .cmd { margin-top: 4px; }
   .tabs { border-radius: var(--r-md); }
@@ -3301,11 +3421,34 @@ button {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
   }
+
+  .hero .eyebrow,
+  .hero h1,
+  .hero-lede,
+  .hero-actions,
+  .hero .cmd-hero,
+  .hero-facts,
+  .note-peek,
+  .tab-panel.is-active {
+    animation: none !important;
+  }
+
+  .site-nav { transition: none !important; }
+
   .kind:hover,
   .recipe:hover { transform: none; }
+
+  .reveal,
+  .has-reveal .reveal,
+  [data-stagger] > * {
+    opacity: 1 !important;
+    translate: none !important;
+  }
 }
 
 @media print {
@@ -3320,6 +3463,10 @@ button {
   .trace,
   .specimen-code { background: #fff !important; color: #111 !important; }
   .section { padding-block: 32px; }
-  .reveal { opacity: 1 !important; transform: none !important; }
+  .reveal,
+  [data-stagger] > * {
+    opacity: 1 !important;
+    translate: none !important;
+  }
 }
 

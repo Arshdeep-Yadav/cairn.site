@@ -8,6 +8,7 @@
   <meta name="author" content="Arshdeep Yadav">
   <meta name="theme-color" content="#f7f4ed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://cairn.arshdeep.works/">
   <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css">
@@ -16,11 +17,16 @@
   <meta property="og:site_name" content="Cairn">
   <meta property="og:title" content="Cairn — shared graph memory for coding agents">
   <meta property="og:description" content="Decisions, changes, questions, risks, and handoffs in one local Markdown vault. Read over MCP by Claude Code, Cursor, Codex, and every other agent you run.">
-  <meta property="og:image" content="assets/shots/home.png">
+  <meta property="og:url" content="https://cairn.arshdeep.works/">
+  <meta property="og:image" content="https://cairn.arshdeep.works/assets/shots/home.png">
+  <meta property="og:image:width" content="1440">
+  <meta property="og:image:height" content="1000">
+  <meta property="og:image:alt" content="The Cairn workspace: vault brief, decisions, memory map, and agents.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cairn — shared graph memory for coding agents">
   <meta name="twitter:description" content="A local MCP server that remembers why the code looks the way it does. Plain Markdown, a derived graph, zero telemetry.">
-  <meta name="twitter:image" content="assets/shots/home.png">
+  <meta name="twitter:image" content="https://cairn.arshdeep.works/assets/shots/home.png">
+  <meta name="twitter:image:alt" content="The Cairn workspace: vault brief, decisions, memory map, and agents.">
 
   <script type="application/ld+json">
   {
@@ -80,7 +86,7 @@
   <header class="site-header" data-header>
     <div class="header-inner wrap">
       <a class="brand" href="#top" aria-label="Cairn — back to top">
-        <img src="assets/brand/favicon.svg" alt="" width="32" height="32">
+        <img src="assets/brand/favicon.svg" alt="" width="32" height="32" decoding="async">
         <span class="brand-name">Cairn</span>
         <span class="brand-version">0.1.0</span>
       </a>
@@ -153,8 +159,8 @@
               <span class="frame-address">127.0.0.1:4242</span>
               <span class="frame-tag">workspace</span>
             </div>
-            <img class="shot-light" src="assets/shots/home.png" alt="The Cairn workspace showing the vault brief, note and link counts, open threads, recent decisions, a memory map, and agents in the vault." width="1440" height="1000" fetchpriority="high">
-            <img class="shot-dark" src="assets/shots/home-dark.png" alt="The Cairn workspace in dark theme, showing the same brief and memory overview." width="1440" height="1000" loading="lazy">
+            <img class="shot-light" src="assets/shots/home.webp" srcset="assets/shots/home-720.webp 720w, assets/shots/home-1080.webp 1080w, assets/shots/home.webp 1440w" sizes="(max-width: 900px) calc(100vw - 48px), (max-width: 1180px) 48vw, 550px" alt="The Cairn workspace showing the vault brief, note and link counts, open threads, recent decisions, a memory map, and agents in the vault." width="1440" height="1000" fetchpriority="high" decoding="async">
+            <img class="shot-dark" src="assets/shots/home-dark.webp" srcset="assets/shots/home-dark-720.webp 720w, assets/shots/home-dark-1080.webp 1080w, assets/shots/home-dark.webp 1440w" sizes="(max-width: 900px) calc(100vw - 48px), (max-width: 1180px) 48vw, 550px" alt="The Cairn workspace in dark theme, showing the same brief and memory overview." width="1440" height="1000" loading="lazy" decoding="async">
           </figure>
 
           <aside class="note-peek" aria-label="Example decision note stored by Cairn">
@@ -263,7 +269,7 @@
           <p class="lede">Cairn isn't a write-only log. It is a loop the agent runs every session: load what is already known, act on it, record what changed, and leave the next agent a clean starting point.</p>
         </header>
 
-        <ol class="loop reveal">
+        <ol class="loop" data-stagger>
           <li class="loop-step">
             <span class="loop-num">01</span>
             <div class="loop-body">
@@ -333,7 +339,7 @@
             </span>
           </div>
 
-          <div class="arch-stack">
+          <div class="arch-stack" data-stagger>
             <div class="arch-layer">
               <div class="arch-index"><span class="arch-num">01</span><span class="arch-tag">Agents</span></div>
               <div class="arch-content">
@@ -482,7 +488,7 @@
           <p class="lede">A note is a Markdown file with YAML frontmatter. Its kind selects the folder and the lifecycle. Its fields connect it to files, sessions, agents, and other notes — and those connections are the product.</p>
         </header>
 
-        <div class="kinds reveal">
+        <div class="kinds" data-stagger>
           <article class="kind kind-decision">
             <div class="kind-head"><span class="kind-dot" aria-hidden="true"></span><h3>Decision</h3></div>
             <p class="kind-status">proposed → accepted → rejected → superseded</p>
@@ -525,7 +531,7 @@
           </article>
         </div>
 
-        <div class="kinds-extra reveal">
+        <div class="kinds-extra" data-stagger>
           <div><span class="kind-dot kind-message" aria-hidden="true"></span><strong>Message</strong><p>Direct or broadcast coordination. Unread state per agent.</p></div>
           <div><span class="kind-dot kind-handoff" aria-hidden="true"></span><strong>Handoff</strong><p>Structured work transfer: summary, next steps, open questions, files.</p></div>
           <div><span class="kind-dot kind-session" aria-hidden="true"></span><strong>Session</strong><p>Who worked, on what goal, with which model and client.</p></div>
@@ -641,7 +647,7 @@ link the follow-up spec.</code></pre>
           <p class="lede">Cairn runs as a local MCP stdio server using the official SDK. One instance per agent: <code>--agent</code> stamps every write, <code>--project</code> scopes it, and the session id links everything written in between.</p>
         </header>
 
-        <div class="contract reveal" role="list" aria-label="The agent session contract">
+        <div class="contract" data-stagger role="list" aria-label="The agent session contract">
           <div role="listitem">
             <span class="contract-step">Before work</span>
             <h3>Read</h3>
@@ -844,7 +850,7 @@ link the follow-up spec.</code></pre>
           <span>Git optional — only <code>capture_changes</code> commit scope needs it</span>
         </div>
 
-        <ol class="install-steps reveal">
+        <ol class="install-steps" data-stagger>
           <li>
             <span class="step-num">01</span>
             <h3>Launch</h3>
@@ -1426,12 +1432,12 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
               <span class="frame-address">127.0.0.1:4242 / graph</span>
               <span class="frame-tag">live</span>
             </div>
-            <img src="assets/shots/graph.png" alt="The Cairn memory graph: a force-directed canvas of note nodes connected by typed edges, with a filter rail and an inspector panel." width="1440" height="1000" loading="lazy">
+            <img src="assets/shots/graph.webp" alt="The Cairn memory graph: a force-directed canvas of note nodes connected by typed edges, with a filter rail and an inspector panel." width="1440" height="1000" loading="lazy" decoding="async">
           </div>
           <figcaption><strong>The memory graph.</strong> Notes are nodes; project, agent, session, and file hubs are virtual nodes. Edges are typed. Pan, zoom, drag, filter by kind, and inspect any node without leaving the canvas.</figcaption>
         </figure>
 
-        <div class="features reveal">
+        <div class="features" data-stagger>
           <article>
             <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg></span>
             <h3>Living brief</h3>
@@ -1464,30 +1470,30 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
           </article>
         </div>
 
-        <div class="gallery reveal">
+        <div class="gallery" data-stagger>
           <figure class="gallery-item span-7">
-            <img src="assets/shots/agents.png" alt="The Agents page: cards for each agent with online state, current project, session, note counts, and last activity." width="1440" height="1000" loading="lazy">
+            <img src="assets/shots/agents.webp" alt="The Agents page: cards for each agent with online state, current project, session, note counts, and last activity." width="1440" height="1000" loading="lazy" decoding="async">
             <figcaption><strong>Agents.</strong> Who is online, what they are working on, which session they are in, and how much memory they have written.</figcaption>
           </figure>
           <figure class="gallery-item span-5">
-            <img src="assets/shots/decisions.png" alt="The Decisions page: a filtered list of decisions with status badges, authors, dates, and links to related notes." width="1440" height="1000" loading="lazy">
+            <img src="assets/shots/decisions.webp" alt="The Decisions page: a filtered list of decisions with status badges, authors, dates, and links to related notes." width="1440" height="1000" loading="lazy" decoding="async">
             <figcaption><strong>Decisions.</strong> Status, author, session, linked files, and the reasoning that produced them — one click from the graph.</figcaption>
           </figure>
           <figure class="gallery-item span-5">
-            <img src="assets/shots/timeline.png" alt="The Timeline page: activity grouped by day with kind labels and agent attribution." width="1440" height="1000" loading="lazy">
+            <img src="assets/shots/timeline.webp" alt="The Timeline page: activity grouped by day with kind labels and agent attribution." width="1440" height="1000" loading="lazy" decoding="async">
             <figcaption><strong>Timeline.</strong> The day-by-day record, filterable by agent or kind. Useful before a handoff or after a break.</figcaption>
           </figure>
           <figure class="gallery-item span-7">
-            <img src="assets/shots/setup.png" alt="The Connect agents page: per-client wiring instructions and the exact MCP command with a copy button." width="1440" height="1000" loading="lazy">
+            <img src="assets/shots/setup.webp" alt="The Connect agents page: per-client wiring instructions and the exact MCP command with a copy button." width="1440" height="1000" loading="lazy" decoding="async">
             <figcaption><strong>Connect agents.</strong> Repeats the exact MCP command for every supported client, ready to paste, with the same copy button as the CLI.</figcaption>
           </figure>
           <figure class="gallery-item span-7">
-            <img src="assets/shots/home-dark.png" alt="The Cairn workspace in dark theme: brief, counts, recent decisions, and the memory map on a near-black warm background." width="1440" height="1000" loading="lazy">
+            <img src="assets/shots/home-dark.webp" alt="The Cairn workspace in dark theme: brief, counts, recent decisions, and the memory map on a near-black warm background." width="1440" height="1000" loading="lazy" decoding="async">
             <figcaption><strong>Dark, light, or system.</strong> Typography-first, with no external UI dependencies. The theme follows the OS unless you choose otherwise.</figcaption>
           </figure>
           <figure class="gallery-item span-5 detail-phone">
             <div class="phone-frame">
-              <img src="assets/shots/mobile.png" alt="The Cairn workspace at phone width: the brief and navigation stacked into a single column." width="390" height="844" loading="lazy">
+              <img src="assets/shots/mobile.webp" alt="The Cairn workspace at phone width: the brief and navigation stacked into a single column." width="390" height="844" loading="lazy" decoding="async">
             </div>
             <figcaption><strong>At 390px.</strong> Navigation collapses, the brief stacks, the graph still pans, and capture still works.</figcaption>
           </figure>
@@ -1640,7 +1646,7 @@ CAIRN_NEW_PASSWORD=… npx cairn auth set-password</code>
           </div>
         </div>
 
-        <div class="recipes reveal">
+        <div class="recipes" data-stagger>
           <a class="recipe" href="https://github.com/Arshdeep-Yadav/Cairn/blob/main/docs/cloud-deployment.md" rel="noopener">
             <span class="recipe-kicker">Compose + Caddy</span>
             <h3>Automated HTTPS</h3>
@@ -1729,7 +1735,7 @@ CAIRN_NEW_PASSWORD=… npx cairn auth set-password</code>
     <section class="section cta-section" id="start" aria-labelledby="cta-title">
       <div class="wrap">
         <div class="cta-card reveal">
-          <img class="cta-mark" src="assets/brand/favicon.svg" alt="" width="280" height="280" loading="lazy">
+          <img class="cta-mark" src="assets/brand/favicon.svg" alt="" width="280" height="280" loading="lazy" decoding="async">
           <div class="cta-content">
             <p class="eyebrow">Start here</p>
             <h2 id="cta-title">Your agents will forget this session.<br><em>Give them somewhere to put it.</em></h2>
@@ -1761,7 +1767,7 @@ CAIRN_NEW_PASSWORD=… npx cairn auth set-password</code>
     <div class="wrap footer-grid">
       <div class="footer-brand">
         <a class="brand" href="#top" aria-label="Cairn — back to top">
-          <img src="assets/brand/favicon.svg" alt="" width="36" height="36">
+          <img src="assets/brand/favicon.svg" alt="" width="36" height="36" decoding="async">
           <span class="brand-name">Cairn</span>
         </a>
         <p>Shared graph memory for coding agents.</p>

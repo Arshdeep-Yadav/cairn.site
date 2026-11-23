@@ -170,9 +170,19 @@
   }
 
   /* ------------------------------------------------------------- reveal pass */
-  const revealItems = [...document.querySelectorAll('.reveal')];
+  const revealItems = [...document.querySelectorAll('.reveal, [data-stagger]')];
   if (revealItems.length && 'IntersectionObserver' in window && !reduceMotion.matches) {
     root.classList.add('has-reveal');
+
+    // Index the children once so CSS can cascade them with a 30–70ms stagger
+    // without putting a style attribute in the authored markup.
+    revealItems.forEach((item) => {
+      if (!item.hasAttribute('data-stagger')) return;
+      [...item.children].forEach((child, index) => {
+        child.style.setProperty('--stagger-i', String(index));
+      });
+    });
+
     const revealObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -181,7 +191,7 @@
           revealObserver.unobserve(entry.target);
         }
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.01 },
     );
     revealItems.forEach((item) => revealObserver.observe(item));
   }
