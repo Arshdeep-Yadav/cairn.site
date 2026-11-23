@@ -136,7 +136,7 @@
 
           <div class="cmd cmd-hero" data-copy-scope>
             <span class="cmd-prompt" aria-hidden="true">$</span>
-            <code id="cmd-hero">npm i -g github:Arshdeep-Yadav/Cairn</code>
+            <code id="cmd-hero">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
             <button class="copy-btn" type="button" data-copy="#cmd-hero" aria-label="Copy the Cairn install command">
               <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
               <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
@@ -854,7 +854,7 @@ link the follow-up spec.</code></pre>
           <li>
             <span class="step-num">01</span>
             <h3>Install the CLI</h3>
-            <p>The installer checks Node, builds from source, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. Windows: <code>irm …/install.ps1 | iex</code>. No install? <code>npx --yes --package github:Arshdeep-Yadav/Cairn cairn</code>.</p>
+            <p>The installer checks Node, builds from source, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. Windows: <code>irm …/install.ps1 | iex</code>. Already have a checkout? <code>npm ci &amp;&amp; npm run build &amp;&amp; npm install -g .</code>. npm 12 blocks remote/git specs, so <code>npx cairn</code> is not used.</p>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
               <code id="cmd-install">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
@@ -1705,7 +1705,7 @@ CAIRN_NEW_PASSWORD=… cairn auth set-password</code>
         <div class="faq-list reveal">
           <details>
             <summary>Why doesn’t <code>npx cairn</code> work?</summary>
-            <p>Because the npm name <code>cairn</code> belongs to an unrelated package, and <code>cairn-memory</code> is taken too. Install from the GitHub source with <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>, or run <code>npx --yes --package github:Arshdeep-Yadav/Cairn cairn</code> without installing.</p>
+            <p>Because the npm name <code>cairn</code> belongs to an unrelated package, <code>cairn-memory</code> is taken too, and npm 12 blocks remote/git package specs. Install from the GitHub source with <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code> (or the PowerShell installer on Windows). The installer builds locally and installs a tarball, so no npm publishing is involved.</p>
           </details>
           <details>
             <summary>Is Cairn a database?</summary>

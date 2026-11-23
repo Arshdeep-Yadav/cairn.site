@@ -695,7 +695,17 @@ button {
 .cmd-hero {
   max-width: 360px;
   margin-top: 24px;
+  align-items: flex-start;
 }
+
+.cmd-hero code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cmd-hero .cmd-prompt,
+.cmd.cmd-hero .copy-btn { align-self: flex-start; }
+.cmd-hero .copy-btn { margin-top: 2px; }
 
 .hero-facts {
   display: flex;
