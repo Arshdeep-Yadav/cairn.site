@@ -85,7 +85,7 @@
 
   <header class="site-header" data-header>
     <div class="header-inner wrap">
-      <a class="brand" href="#top" aria-label="Cairn — back to top">
+      <a class="brand" href="#top">
         <img src="assets/brand/favicon.svg" alt="" width="32" height="32" decoding="async">
         <span class="brand-name">Cairn</span>
         <span class="brand-version">0.1.0</span>
@@ -134,18 +134,31 @@
             <a class="btn btn-secondary" href="#architecture">See the architecture</a>
           </div>
 
-          <div class="cmd cmd-hero" data-copy-scope>
-            <span class="cmd-prompt" aria-hidden="true">$</span>
-            <code id="cmd-hero">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
-            <button class="copy-btn" type="button" data-copy="#cmd-hero" aria-label="Copy the Cairn install command">
-              <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
-              <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
-              <span data-copy-label>Copy</span>
-            </button>
+          <div class="cmd-group" data-copy-scope>
+            <p class="cmd-group-label">macOS / Linux · Terminal</p>
+            <div class="cmd cmd-hero">
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-hero-unix">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
+              <button class="copy-btn" type="button" data-copy="#cmd-hero-unix" aria-label="Copy the macOS or Linux install command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <p class="cmd-group-label">Windows · PowerShell</p>
+            <div class="cmd cmd-hero">
+              <span class="cmd-prompt" aria-hidden="true">PS&gt;</span>
+              <code id="cmd-hero-windows">irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code>
+              <button class="copy-btn" type="button" data-copy="#cmd-hero-windows" aria-label="Copy the Windows install command">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
           </div>
 
           <ul class="hero-facts">
-            <li>Node 20+</li>
+            <li>Node 20.19+</li>
             <li>14 MCP tools</li>
             <li>Zero native binaries</li>
             <li>No telemetry</li>
@@ -838,12 +851,12 @@ link the follow-up spec.</code></pre>
         <header class="section-head reveal">
           <p class="eyebrow">Install</p>
           <h2 id="install-title">Install once. Then two commands.</h2>
-          <p class="lede">Node 20 or newer. The npm names <code>cairn</code> and <code>cairn-memory</code> belong to unrelated packages, so Cairn installs directly from its GitHub source. Run the launch and wiring commands from your project root; Cairn creates <code>.cairn/</code> if it doesn't exist. Every step is idempotent, and every file it touches is backed up first.</p>
+          <p class="lede">Node 20.19 or newer. The npm names <code>cairn</code> and <code>cairn-memory</code> belong to unrelated packages, so Cairn installs directly from its GitHub source. Run the launch and wiring commands from your project root; Cairn creates <code>.cairn/</code> if it doesn't exist. Setup is idempotent, and existing client files are backed up before Cairn edits them.</p>
         </header>
 
         <div class="prereq reveal">
           <span class="prereq-label">Before you start</span>
-          <code>node --version</code><span class="prereq-arrow" aria-hidden="true">→</span><span>v20 or newer</span>
+          <code>node --version</code><span class="prereq-arrow" aria-hidden="true">→</span><span>v20.19 or newer</span>
           <span class="prereq-div" aria-hidden="true"></span>
           <span>npm available (<code>npm --version</code>)</span>
           <span class="prereq-div" aria-hidden="true"></span>
@@ -854,15 +867,28 @@ link the follow-up spec.</code></pre>
           <li>
             <span class="step-num">01</span>
             <h3>Install the CLI</h3>
-            <p>The installer checks Node, builds from source, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. <strong>Windows:</strong> use <code>irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code> in PowerShell — Windows has no <code>sh</code>. npm 12 blocks dependency install scripts and the npm names are taken, so <code>npx cairn</code> is not used.</p>
-            <div class="cmd cmd-dark" data-copy-scope>
-              <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-install">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
-              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install" aria-label="Copy the CLI install command">
-                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
-                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
-                <span data-copy-label>Copy</span>
-              </button>
+            <p>Pick your shell. The installer checks Node, builds from source once, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. npm 12 blocks dependency install scripts and the npm names are taken, so <code>npx cairn</code> is not used.</p>
+            <div class="cmd-group" data-copy-scope>
+              <p class="cmd-group-label">macOS / Linux · Terminal</p>
+              <div class="cmd cmd-dark">
+                <span class="cmd-prompt" aria-hidden="true">$</span>
+                <code id="cmd-install-unix">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install-unix" aria-label="Copy the macOS or Linux install command">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
+              <p class="cmd-group-label">Windows · PowerShell</p>
+              <div class="cmd cmd-dark">
+                <span class="cmd-prompt" aria-hidden="true">PS&gt;</span>
+                <code id="cmd-install-windows">irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code>
+                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install-windows" aria-label="Copy the Windows install command">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
             </div>
           </li>
           <li>
@@ -896,7 +922,7 @@ link the follow-up spec.</code></pre>
           <li>
             <span class="step-num">04</span>
             <h3>Verify</h3>
-            <p><code>status</code> prints the vault, note count, live workspace, wired clients, and the exact MCP command. <code>doctor</code> is a read-only health check.</p>
+            <p><code>status</code> prints the vault, note count, live workspace, wired clients, and an MCP command template — replace <code>&lt;handle&gt;</code> with your client's name. <code>doctor</code> is a read-only health check.</p>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
               <code id="cmd-verify">cairn status</code>
@@ -1424,7 +1450,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <details class="snippet snippet-quiet">
               <summary>Uninstalling Cairn</summary>
-              <p>Remove the CLI with <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh -s -- --uninstall</code> (or <code>npm uninstall -g cairn-memory</code>). Run <code>cairn connect --dry-run</code> to review what is wired. Then remove the <code>cairn</code> entry from each client config, the marked block from <code>CLAUDE.md</code> / <code>AGENTS.md</code>, the hook groups in <code>.claude/settings.json</code>, and the vault folder if you no longer want the memory.</p>
+              <p><strong>macOS / Linux:</strong> <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh -s -- --uninstall</code>. <strong>Windows:</strong> <code>npm uninstall -g cairn-memory</code>. Run <code>cairn connect --dry-run</code> to review what is wired. Then remove the <code>cairn</code> entry from each client config, the marked block from <code>CLAUDE.md</code> / <code>AGENTS.md</code>, the hook groups in <code>.claude/settings.json</code>, and the vault folder if you no longer want the memory.</p>
               <p>Redacted copies of every file <code>connect</code> edited are in <code>vault/state/backups/</code>.</p>
             </details>
           </div>
@@ -1498,8 +1524,8 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             <figcaption><strong>Timeline.</strong> The day-by-day record, filterable by agent or kind. Useful before a handoff or after a break.</figcaption>
           </figure>
           <figure class="gallery-item span-7">
-            <img src="assets/shots/setup.webp" alt="The Connect agents page: per-client wiring instructions and the exact MCP command with a copy button." width="1440" height="1000" loading="lazy" decoding="async">
-            <figcaption><strong>Connect agents.</strong> Repeats the exact MCP command for every supported client, ready to paste, with the same copy button as the CLI.</figcaption>
+            <img src="assets/shots/setup.webp" alt="The Connect agents page: per-client wiring instructions and an MCP command with a copy button." width="1440" height="1000" loading="lazy" decoding="async">
+            <figcaption><strong>Connect agents.</strong> Repeats the MCP command for every supported client, ready to paste — replace <code>&lt;handle&gt;</code> with the client's name.</figcaption>
           </figure>
           <figure class="gallery-item span-7">
             <img src="assets/shots/home-dark.webp" alt="The Cairn workspace in dark theme: brief, counts, recent decisions, and the memory map on a near-black warm background." width="1440" height="1000" loading="lazy" decoding="async">
@@ -1705,7 +1731,7 @@ CAIRN_NEW_PASSWORD=… cairn auth set-password</code>
         <div class="faq-list reveal">
           <details>
             <summary>Why doesn’t <code>npx cairn</code> work?</summary>
-            <p>Because the npm names <code>cairn</code> and <code>cairn-memory</code> belong to unrelated packages, and npm 12 blocks dependency install scripts. Install from the GitHub source with <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code> (or the PowerShell installer on Windows). The installer builds locally and installs a tarball, so no npm publishing is involved.</p>
+            <p>Because the npm names <code>cairn</code> and <code>cairn-memory</code> belong to unrelated packages, and npm 12 blocks dependency install scripts. On macOS or Linux run <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>; on Windows run <code>irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code> in PowerShell. Either installer builds locally and installs a tarball, so no npm publishing is involved.</p>
           </details>
           <details>
             <summary>Is Cairn a database?</summary>
@@ -1745,7 +1771,7 @@ CAIRN_NEW_PASSWORD=… cairn auth set-password</code>
           </details>
           <details>
             <summary>What is the license and current version?</summary>
-            <p>MIT. The current release is 0.1.0, requires Node 20 or newer, and ships with no native binaries.</p>
+            <p>MIT. The current release is 0.1.0, requires Node 20.19 or newer, and ships with no native binaries.</p>
           </details>
         </div>
       </div>
@@ -1774,7 +1800,7 @@ CAIRN_NEW_PASSWORD=… cairn auth set-password</code>
               </a>
               <a class="btn btn-secondary" href="https://github.com/Arshdeep-Yadav/Cairn#readme" rel="noopener">Read the README</a>
             </div>
-            <p class="cta-meta">Node 20+ · MIT · no telemetry · no hosted copy</p>
+            <p class="cta-meta">Node 20.19+ · MIT · no telemetry · no hosted copy</p>
           </div>
         </div>
       </div>
