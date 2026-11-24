@@ -965,6 +965,7 @@ link the follow-up spec.</code></pre>
             <button type="button" role="tab" id="tab-windsurf" aria-controls="panel-windsurf" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Windsurf</button>
             <button type="button" role="tab" id="tab-zed" aria-controls="panel-zed" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Zed</button>
             <button type="button" role="tab" id="tab-opencode" aria-controls="panel-opencode" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>OpenCode</button>
+            <button type="button" role="tab" id="tab-more-agents" aria-controls="panel-more-agents" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>More agents</button>
             <button type="button" role="tab" id="tab-generic" aria-controls="panel-generic" aria-selected="false" tabindex="-1"><span class="tab-dot" aria-hidden="true"></span>Generic MCP</button>
           </div>
 
@@ -1332,6 +1333,35 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
                 </button>
               </div>
             </details>
+          </section>
+
+          <section class="tab-panel" id="panel-more-agents" role="tabpanel" aria-labelledby="tab-more-agents" tabindex="0" hidden>
+            <div class="panel-head">
+              <div><h3>Hermes Agent · T3 Code · Pi · Command Code</h3><p>Prints a stdio MCP entry for each client. AGENTS.md and the shared skill are installed automatically.</p></div>
+              <span class="panel-badge">prints a snippet</span>
+            </div>
+            <div class="cmd cmd-dark" data-copy-scope>
+              <span class="cmd-prompt" aria-hidden="true">$</span>
+              <code id="cmd-more-agents">cairn connect hermes t3-code pi command-code</code>
+              <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-more-agents" aria-label="Copy setup command for additional agents">
+                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </div>
+            <div class="panel-grid">
+              <div>
+                <h4>Writes</h4>
+                <ul class="file-list">
+                  <li><code>AGENTS.md</code><span>Always-on rule</span></li>
+                  <li><code>.agents/skills/cairn/SKILL.md</code><span>Shared skill</span></li>
+                </ul>
+              </div>
+              <div class="panel-note">
+                <h4>Then</h4>
+                <p>Paste the printed <code>mcpServers</code> entry into your client's MCP config. Config paths vary, so Cairn does not edit them automatically.</p>
+              </div>
+            </div>
           </section>
 
           <section class="tab-panel" id="panel-generic" role="tabpanel" aria-labelledby="tab-generic" tabindex="0" hidden>
@@ -1775,7 +1805,7 @@ CAIRN_NEW_PASSWORD=… cairn auth set-password</code>
           </details>
           <details>
             <summary>Which clients are supported?</summary>
-            <p>Claude Code, Cursor, Antigravity, VS Code / GitHub Copilot, Codex, Gemini CLI, Windsurf, Zed, OpenCode, Omnirush, and any MCP client that accepts a stdio command. Four are configured automatically; the rest print a snippet.</p>
+            <p>Claude Code, Cursor, Antigravity, VS Code / GitHub Copilot, Codex, Gemini CLI, Windsurf, Zed, OpenCode, Omnirush, Hermes Agent, T3 Code, Pi, Command Code, and any MCP client that accepts a stdio command. Four are configured automatically; the rest print a snippet.</p>
           </details>
           <details>
             <summary>What is the license and current version?</summary>
