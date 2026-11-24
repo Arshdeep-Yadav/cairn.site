@@ -785,6 +785,11 @@ button {
   min-width: 0;
 }
 
+/* Line the bottom of the workspace visual up with the Install Cairn button. */
+@media (min-width: 1081px) {
+  .hero-visual { transform: translateY(-40px); }
+}
+
 .frame {
   overflow: hidden;
   background: var(--surface);
