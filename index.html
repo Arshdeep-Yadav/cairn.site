@@ -135,25 +135,29 @@
           </div>
 
           <div class="cmd-group" data-copy-scope>
-            <p class="cmd-group-label">macOS / Linux · Terminal</p>
-            <div class="cmd cmd-hero">
-              <span class="cmd-prompt" aria-hidden="true">$</span>
-              <code id="cmd-hero-unix">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
-              <button class="copy-btn" type="button" data-copy="#cmd-hero-unix" aria-label="Copy the macOS or Linux install command">
-                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
-                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
-                <span data-copy-label>Copy</span>
-              </button>
+            <div class="cmd-choice">
+              <p class="cmd-group-label">macOS / Linux · Terminal</p>
+              <div class="cmd cmd-hero">
+                <span class="cmd-prompt" aria-hidden="true">$</span>
+                <code id="cmd-hero-unix">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
+                <button class="copy-btn" type="button" data-copy="#cmd-hero-unix" aria-label="Copy the macOS or Linux install command">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
             </div>
-            <p class="cmd-group-label">Windows · PowerShell</p>
-            <div class="cmd cmd-hero">
-              <span class="cmd-prompt" aria-hidden="true">PS&gt;</span>
-              <code id="cmd-hero-windows">irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code>
-              <button class="copy-btn" type="button" data-copy="#cmd-hero-windows" aria-label="Copy the Windows install command">
-                <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
-                <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
-                <span data-copy-label>Copy</span>
-              </button>
+            <div class="cmd-choice">
+              <p class="cmd-group-label">Windows · PowerShell</p>
+              <div class="cmd cmd-hero">
+                <span class="cmd-prompt" aria-hidden="true">PS&gt;</span>
+                <code id="cmd-hero-windows">irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code>
+                <button class="copy-btn" type="button" data-copy="#cmd-hero-windows" aria-label="Copy the Windows install command">
+                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span data-copy-label>Copy</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -869,25 +873,29 @@ link the follow-up spec.</code></pre>
             <h3>Install the CLI</h3>
             <p>Pick your shell. The installer checks Node, builds from source once, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. npm 12 blocks dependency install scripts and the npm names are taken, so <code>npx cairn</code> is not used.</p>
             <div class="cmd-group" data-copy-scope>
-              <p class="cmd-group-label">macOS / Linux · Terminal</p>
-              <div class="cmd cmd-dark">
-                <span class="cmd-prompt" aria-hidden="true">$</span>
-                <code id="cmd-install-unix">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
-                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install-unix" aria-label="Copy the macOS or Linux install command">
-                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
-                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
-                  <span data-copy-label>Copy</span>
-                </button>
+              <div class="cmd-choice">
+                <p class="cmd-group-label">macOS / Linux · Terminal</p>
+                <div class="cmd cmd-dark">
+                  <span class="cmd-prompt" aria-hidden="true">$</span>
+                  <code id="cmd-install-unix">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
+                  <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install-unix" aria-label="Copy the macOS or Linux install command">
+                    <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                    <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                    <span data-copy-label>Copy</span>
+                  </button>
+                </div>
               </div>
-              <p class="cmd-group-label">Windows · PowerShell</p>
-              <div class="cmd cmd-dark">
-                <span class="cmd-prompt" aria-hidden="true">PS&gt;</span>
-                <code id="cmd-install-windows">irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code>
-                <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install-windows" aria-label="Copy the Windows install command">
-                  <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
-                  <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
-                  <span data-copy-label>Copy</span>
-                </button>
+              <div class="cmd-choice">
+                <p class="cmd-group-label">Windows · PowerShell</p>
+                <div class="cmd cmd-dark">
+                  <span class="cmd-prompt" aria-hidden="true">PS&gt;</span>
+                  <code id="cmd-install-windows">irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code>
+                  <button class="copy-btn copy-btn-dark" type="button" data-copy="#cmd-install-windows" aria-label="Copy the Windows install command">
+                    <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg>
+                    <svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg>
+                    <span data-copy-label>Copy</span>
+                  </button>
+                </div>
               </div>
             </div>
           </li>

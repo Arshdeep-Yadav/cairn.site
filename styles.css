@@ -547,9 +547,11 @@ button {
   scrollbar-width: thin;
 }
 
-/* Both install commands are visible — the reader picks the right shell. */
-.cmd-group { display: grid; gap: 7px; }
-.cmd-group + .cmd-group { margin-top: 14px; }
+/* Both install commands are visible — the reader picks the right shell.
+   Each stays on one line; long URLs scroll inside their own code box. */
+.cmd-group { display: grid; gap: 10px; min-width: 0; max-width: 100%; }
+.cmd-choice { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; min-width: 0; }
+.cmd-group .cmd { min-width: 0; }
 .cmd-group-label {
   margin: 0;
   color: var(--ink-3);
@@ -560,6 +562,10 @@ button {
   text-transform: uppercase;
 }
 .cmd-group .cmd { min-height: 42px; }
+.cmd-group .cmd code { white-space: nowrap; overflow-x: auto; }
+.install-steps .cmd-group { gap: 9px; }
+.install-steps .cmd-choice .cmd { margin-top: 0; }
+.install-steps .cmd-group .cmd code { font-size: 0.7rem; }
 
 .cmd-prompt {
   color: var(--accent);
@@ -674,7 +680,7 @@ button {
   gap: clamp(36px, 5vw, 72px);
 }
 
-.hero-copy { max-width: 640px; }
+.hero-copy { max-width: 640px; min-width: 0; }
 
 .hero h1 {
   margin-top: 20px;
@@ -706,7 +712,8 @@ button {
   margin-top: 30px;
 }
 
-.hero .cmd-group { max-width: 420px; margin-top: 24px; }
+.hero .cmd-group { width: 100%; margin-top: 24px; }
+.hero .cmd-group .cmd code { font-size: 0.7rem; }
 .cmd-hero {
   align-items: flex-start;
 }
@@ -3368,6 +3375,7 @@ button {
   .contract { grid-template-columns: 1fr; }
   .contract p { max-width: 60ch; }
   .install-steps { grid-template-columns: minmax(0, 1fr); }
+  .install-steps .cmd-group { grid-template-columns: minmax(0, 1fr); }
   .install-steps > li { min-height: 0; }
   .install-steps .cmd { margin-top: 4px; }
   .tabs { border-radius: var(--r-md); }
