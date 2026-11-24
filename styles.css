@@ -714,6 +714,13 @@ button {
 
 .hero .cmd-group { width: 100%; margin-top: 24px; }
 .hero .cmd-group .cmd code { font-size: 0.7rem; }
+
+/* The visual sits higher, so these rows can extend into the empty space to
+   the right and show the whole command without an inner scrollbar. */
+@media (min-width: 1081px) {
+  .hero .cmd-group { width: 660px; max-width: none; }
+  .hero .cmd-group .cmd code { overflow-x: visible; }
+}
 .cmd-hero {
   align-items: flex-start;
 }
