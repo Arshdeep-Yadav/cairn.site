@@ -854,7 +854,7 @@ link the follow-up spec.</code></pre>
           <li>
             <span class="step-num">01</span>
             <h3>Install the CLI</h3>
-            <p>The installer checks Node, builds from source, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. Windows: <code>irm …/install.ps1 | iex</code>. Already have a checkout? <code>npm ci &amp;&amp; npm run build &amp;&amp; npm install -g .</code>. npm 12 blocks remote/git specs, so <code>npx cairn</code> is not used.</p>
+            <p>The installer checks Node, builds from source, and puts a <code>cairn</code> command on your <code>PATH</code>. It never touches your vault. <strong>Windows:</strong> use <code>irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex</code> in PowerShell — Windows has no <code>sh</code>. Already have a checkout? <code>npm ci &amp;&amp; npm run build &amp;&amp; npm install -g .</code>. npm 12 blocks remote/git specs, so <code>npx cairn</code> is not used.</p>
             <div class="cmd cmd-dark" data-copy-scope>
               <span class="cmd-prompt" aria-hidden="true">$</span>
               <code id="cmd-install">curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh</code>
@@ -1424,7 +1424,7 @@ args = ["&lt;path-to-cairn&gt;/dist/cli/index.js", "mcp", "--vault", ".cairn", "
             </div>
             <details class="snippet snippet-quiet">
               <summary>Uninstalling Cairn</summary>
-              <p>Remove the CLI with <code>curl -fsSL …/install.sh | sh -s -- --uninstall</code> (or <code>npm uninstall -g cairn-memory</code>). Run <code>cairn connect --dry-run</code> to review what is wired. Then remove the <code>cairn</code> entry from each client config, the marked block from <code>CLAUDE.md</code> / <code>AGENTS.md</code>, the hook groups in <code>.claude/settings.json</code>, and the vault folder if you no longer want the memory.</p>
+              <p>Remove the CLI with <code>curl -fsSL https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.sh | sh -s -- --uninstall</code> (or <code>npm uninstall -g cairn-memory</code>). Run <code>cairn connect --dry-run</code> to review what is wired. Then remove the <code>cairn</code> entry from each client config, the marked block from <code>CLAUDE.md</code> / <code>AGENTS.md</code>, the hook groups in <code>.claude/settings.json</code>, and the vault folder if you no longer want the memory.</p>
               <p>Redacted copies of every file <code>connect</code> edited are in <code>vault/state/backups/</code>.</p>
             </details>
           </div>

@@ -66,6 +66,24 @@
     if (event.key === 'Escape') closeMenu();
   });
 
+  /* ------------------------------------------------------- platform installer */
+  // The shell one-liner is not portable: PowerShell has no `sh`, and bash has
+  // no `irm`. Swap the visible install commands to the matching script so the
+  // copy button never hands a Windows visitor a POSIX-only command.
+  if (/Windows/i.test(navigator.userAgent)) {
+    const windowsCommand = 'irm https://raw.githubusercontent.com/Arshdeep-Yadav/Cairn/main/install.ps1 | iex';
+    for (const id of ['#cmd-hero', '#cmd-install']) {
+      const code = document.querySelector(id);
+      if (code) code.textContent = windowsCommand;
+    }
+    document
+      .querySelector('button[data-copy="#cmd-hero"]')
+      ?.setAttribute('aria-label', 'Copy the Windows install command');
+    document
+      .querySelector('button[data-copy="#cmd-install"]')
+      ?.setAttribute('aria-label', 'Copy the Windows CLI install command');
+  }
+
   /* ------------------------------------------------------------ copy buttons */
   document.querySelectorAll('[data-copy]').forEach((button) => {
     button.addEventListener('click', async () => {
